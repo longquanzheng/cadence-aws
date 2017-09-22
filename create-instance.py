@@ -1,8 +1,10 @@
 import boto3,argparse,json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cluster", choices=['cassandra', 'matching', 'history', 'frontend', 'stress'], required=True, help='Cluster type that will be created')
+parser.add_argument("--cluster", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='Cluster type that will be created')
 parser.add_argument("--num", type=int, default=1, help='number of instances that will be created')
+parser.add_argument("--instance-type", default='t2.medium')
+parser.add_argument("--disk-size", type=int, default=30, help="disk size in GiB")
 args = parser.parse_args()
 
 ec2 = boto3.client('ec2')
@@ -18,13 +20,13 @@ response = ec2.run_instances(
                 # Use default of gp2 is 100/3000
                 #'Iops': 100,
                 # need bigger for Cassandra
-                'VolumeSize': 30,
+                'VolumeSize': args.disk_size,
                 'VolumeType': 'gp2'
             }
         },
     ],
     ImageId='ami-4fffc834',
-    InstanceType='t2.medium',
+    InstanceType=args.instance_type,
     KeyName='cadence-longer',
     MaxCount=args.num,
     MinCount=args.num,

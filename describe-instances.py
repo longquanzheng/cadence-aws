@@ -1,7 +1,7 @@
 import boto3,argparse,json,pprint
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cluster", choices=['cassandra', 'matching', 'history', 'frontend', 'stress'], required=True, help='Cluster type')
+parser.add_argument("--cluster", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='Cluster type')
 
 args = parser.parse_args()
 
