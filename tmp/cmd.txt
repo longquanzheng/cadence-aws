@@ -1,0 +1,23 @@
+docker run --name test-cassandra  -e CASSANDRA_BROADCAST_ADDRESS=10.4.124.208 -p 7000:7000 cassandra:3.11
+docker run --name test-cassandra  -e CASSANDRA_BROADCAST_ADDRESS=10.4.125.14 -p 7000:7000 -e CASSANDRA_SEEDS=10.4.124.208 cassandra:3.11
+
+#run new cassandra instance
+docker run --name test-cassandra  -p 7000:7000 -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 cassandra:3.11
+
+ sudo yum update -y; \
+ sudo yum install docker -y; \
+ sudo service docker start; \
+ sudo usermod -a -G docker ec2-user; \
+ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose; \
+ sudo chmod +x /usr/local/bin/docker-compose
+
+
+ sudo yum update -y
+ sudo yum install docker -y
+ sudo service docker start
+ sudo usermod -a -G docker ec2-user
+ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+ sudo chmod +x /usr/local/bin/docker-compose
+
+
+ssh -i ~/i.pem ec2-user@hostip 'bash -s' < ./bashscript/install_docker.sh
