@@ -2,7 +2,13 @@ docker run --name test-cassandra  -e CASSANDRA_BROADCAST_ADDRESS=10.4.124.208 -p
 docker run --name test-cassandra  -e CASSANDRA_BROADCAST_ADDRESS=10.4.125.14 -p 7000:7000 -e CASSANDRA_SEEDS=10.4.124.208 cassandra:3.11
 
 #run new cassandra instance
-docker run --name test-cassandra  -p 7000:7000 -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 cassandra:3.11
+docker run -d --name test-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 cassandra:3.11
+
+
+### it works
+docker run  -d --name test-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS=10.4.125.14 -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 cassandra:3.9
+
+docker run -d  --name test-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS=10.4.124.208 -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 cassandra:3.9
 
  sudo yum update -y; \
  sudo yum install docker -y; \
@@ -21,3 +27,25 @@ docker run --name test-cassandra  -p 7000:7000 -e CASSANDRA_SEEDS=10.4.124.208,1
 
 
 ssh -i ~/i.pem ec2-user@hostip 'bash -s' < ./bashscript/install_docker.sh
+
+
+10.4.124.208,10.4.125.14
+#run statsd
+docker run -d -p 8080:80 -p 2003:2003 -p 8125:8125 -p 8126:8126 hopsoft/graphite-statsd
+
+#all cadence ips:
+10.4.119.95,10.4.127.220,10.4.127.135,10.4.123.230,10.4.124.207,10.4.121.18,10.4.118.159,10.4.127.180
+
+
+docker run -d -e CASSANDRA_SEEDS=10.4.124.208 -e SERVICES=matching  ubercadence/server:0.3.1
+
+
+#run cadence services
+#matching
+docker run -d -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 -e RINGPOP_SEEDS=10.4.119.95,10.4.127.220,10.4.127.135,10.4.123.230,10.4.124.207,10.4.121.18,10.4.118.159,10.4.127.180  -e STATSD_ENDPOINT=127.0.0.1:8125 -e SERVICES=matching  --name cadence-matching  ubercadence/server:0.3.1
+
+#history
+docker run -d -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 -e RINGPOP_SEEDS=10.4.119.95,10.4.127.220,10.4.127.135,10.4.123.230,10.4.124.207,10.4.121.18,10.4.118.159,10.4.127.180  -e STATSD_ENDPOINT=127.0.0.1:8125 -e SERVICES=history  --name cadence-history ubercadence/server:0.3.1
+
+#frontend
+docker run -d -e CASSANDRA_SEEDS=10.4.124.208,10.4.125.14 -e RINGPOP_SEEDS=10.4.119.95,10.4.127.220,10.4.127.135,10.4.123.230,10.4.124.207,10.4.121.18,10.4.118.159,10.4.127.180  -e STATSD_ENDPOINT=127.0.0.1:8125 -e SERVICES=frontend  --name cadence-frontend ubercadence/server:0.3.1
