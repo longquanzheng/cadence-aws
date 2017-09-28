@@ -37,7 +37,9 @@ docker run -d -p 8080:80 -p 2003:2003 -p 8125:8125 -p 8126:8126 hopsoft/graphite
 10.4.119.95,10.4.127.220,10.4.127.135,10.4.123.230,10.4.124.207,10.4.121.18,10.4.118.159,10.4.127.180
 
 
-docker run -d -e CASSANDRA_SEEDS=10.4.124.208 -e SERVICES=matching  ubercadence/server:0.3.1
+#onebox 3.11
+docker run  -d --name test-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 cassandra:3.11
+docker run -e CASSANDRA_SEEDS=10.4.107.20 -e SERVICES=matching  cadence:test
 
 
 #run cadence services
