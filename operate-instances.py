@@ -25,8 +25,10 @@ def run_cmd(instances, instance_idxs, cmd_tmpl):
             print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."
             continue
 
-        cmd = "ssh -i ~/i.pem ec2-user@"+public_ip+" "+cmd_tmpl.format(public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'], cassandra_seeds=cassandra_seeds, statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=args.cluster)
-        print "running: "+cmd
+        cmd = "ssh -i ~/i.pem ec2-user@" + instances[idx]['public_ip'] + " "+cmd_tmpl.format(
+            public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'], cassandra_seeds=cassandra_seeds,
+            statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=args.cluster)
+        print "\n <<<running: "+cmd+">>>"
         if not args.dry_run :
             subprocess.call(cmd,shell=True)
 
@@ -231,7 +233,8 @@ else:
         if op==0:# for customized command
             print "input command to be run:"
             sys.stdout.write(">>>")
-            cmd_tmpl = str(raw_input())
+            cmd_tmpl = '\''+str(raw_input())+'\''
+            run_cmd(instances, instance_idxs, cmd_tmpl )
         elif op==7: # for terminating EC2 instances
             terminate_instances(instances, instance_idxs)
         else:
