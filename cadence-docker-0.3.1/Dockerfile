@@ -32,6 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		wget \
 		python-pip \
 		git-all \
+		netcat \
+		vim \
+		tcpdump \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN pip install cqlsh
@@ -56,13 +59,14 @@ ENV CADENCE_HOME $GOPATH/src/github.com/uber/cadence
 RUN go get -u github.com/Masterminds/glide
 RUN go get -u github.com/golang/lint/golint
 
-RUN git clone --depth=50 --single-branch -b 'v0.3.1' https://github.com/uber/cadence.git $CADENCE_HOME
-RUN cd $CADENCE_HOME; make bins_nothrift
+RUN git clone --depth=50 https://github.com/uber/cadence.git $CADENCE_HOME
+RUN cd $CADENCE_HOME; git checkout v0.3.1; make bins_nothrift
 
 EXPOSE 7933 7934 7935
 
 COPY ./start.sh $CADENCE_HOME/start.sh
 COPY ./config_template.yaml $CADENCE_HOME/config/docker_template.yaml
+COPY ./base.yaml $CADENCE_HOME/config/base.yaml
 RUN chmod a+x $CADENCE_HOME/start.sh
 
 WORKDIR $CADENCE_HOME
