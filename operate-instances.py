@@ -2,6 +2,7 @@ import boto3,argparse,json,pprint,subprocess,sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cluster", required=True, help='Cluster type')
+parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 args = parser.parse_args()
 
 ec2 = boto3.client('ec2')
@@ -23,7 +24,9 @@ def run_cmd(ec2_response, host_id, cmd_tmpl, cluster):
             private_ip = ins['PrivateIpAddress']
 
             cmd = "ssh -i ~/i.pem ec2-user@"+public_ip+" "+cmd_tmpl.format(public_ip=public_ip, private_ip=private_ip, cassandra_seeds=cassandra_seeds, statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=cluster)
-            subprocess.call(cmd,shell=True)
+            print "running: "+cmd
+            if not args.dry_run :
+                subprocess.call(cmd,shell=True)
 
 
 
@@ -123,7 +126,12 @@ cmd_map = {
     5:{
         'cmd': '',
         'desc': 'login EC2 host'
-      }
+      },
+
+    6:{
+        'cmd': '-f -N -L 8080:{private_ip}:80',
+        'desc': 'forword remote 80 to 8080'
+    }
 }
 
 ins_cnt = 0
