@@ -8,25 +8,20 @@ args = parser.parse_args()
 ec2 = boto3.client('ec2')
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
 
-def run_cmd(ec2_response, host_id, cmd_tmpl, cluster):
+def run_cmd(instances, instance_idxs, cmd_tmpl):
     cassandra_seeds, statsd_seeds, cadence_seeds = get_seeds()
-    ins_cnt = 0
-    for res in ec2_response['Reservations']:
+    for idx in instance_idxs:
+        if idx not in instances:
+            print " #"+str(idx)+" instance doesn't exist, skip..."
+            continue
+        if instances[idx]['State'] != 'running':
+            print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."
+            continue
 
-        for ins in res['Instances']:
-            ins_cnt += 1
-            if ins_cnt != host_id and host_id != 0:
-                continue
-            if ins['State']['Name'] != 'running':
-                print " instance #"+str(ins_cnt)+" is not running, skip..."
-                continue
-            public_ip = ins['NetworkInterfaces'][0]['PrivateIpAddresses'][0]['Association']['PublicIp']
-            private_ip = ins['PrivateIpAddress']
-
-            cmd = "ssh -i ~/i.pem ec2-user@"+public_ip+" "+cmd_tmpl.format(public_ip=public_ip, private_ip=private_ip, cassandra_seeds=cassandra_seeds, statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=cluster)
-            print "running: "+cmd
-            if not args.dry_run :
-                subprocess.call(cmd,shell=True)
+        cmd = "ssh -i ~/i.pem ec2-user@"+public_ip+" "+cmd_tmpl.format(public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'], cassandra_seeds=cassandra_seeds, statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=args.cluster)
+        print "running: "+cmd
+        if not args.dry_run :
+            subprocess.call(cmd,shell=True)
 
 
 
@@ -73,6 +68,37 @@ def get_seeds():
 
 
 
+def terminate_instances(instances, instance_idxs):
+    instance_ids = []
+    for idx in instance_idxs:
+        if idx not in instances:
+            print " #"+str(idx)+" instance doesn't exist, skip..."
+            continue
+        if instances[idx]['State'] != 'running':
+            print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."
+            continue
+        instance_ids.append(instances[idx]['InstanceId'])
+    if len(instance_ids)==0:
+        print "No instance to be terminated. Done."
+    else:
+        if args.dry_run:
+            print "Trying to terminate instances:"+str(instance_ids)
+        else:
+            response = ec2.terminate_instances(InstanceIds=instance_ids)
+            for ins in response['TerminatingInstances']:
+                print "instance "+ins['InstanceId']+" is now "+ins['CurrentState']['Name']
+    return
+
+
+def print_instances(instances):
+    for idx in instances:
+        print "---------------------"
+        print "("+str(idx)+")."+ instances[idx]['InstanceId'] + " is " + instances[idx]['State']
+        print "\tpublic IP:\t"+instances[idx]['public_ip']
+        print "\tprivate IP:\t"+instances[idx]['private_ip']
+    print "############## Total:"+str(len(instances)) + " ##############"
+
+
 
 ######### main function begins here ##########
 filters[0]['Values'] = [ 'cadence-dev-longer-'+args.cluster ]
@@ -96,8 +122,11 @@ elif args.cluster in ['frontend', 'matching', 'history']:
 # TODO
 #'port forwarding cmd': 'ssh -f -N -L LOCAL_PORT:{private_ip}:REMOTE_PORT ec2-user@{public_ip} -i ~/i.pem'
 cmd_map = {
-    # reserve 0 for customized command
-    #0: {}
+    # 0 for customized command
+    0: {
+        'cmd': 'NOT a real command',
+        'desc': 'run customized command'
+    },
 
     # install docker
     1: {
@@ -131,46 +160,73 @@ cmd_map = {
     6:{
         'cmd': '-f -N -L 8080:{private_ip}:80',
         'desc': 'forword remote 80 to 8080'
-    }
+    },
+
+    7:{
+        'cmd': 'NOT a real command',
+        'desc': 'Terminate EC2 instance'
+    },
+
 }
 
+
+#Parsing ec2 response and print out brief
 ins_cnt = 0
+instances = {}
 for res in response['Reservations']:
 
     for ins in res['Instances']:
+        instances[ins_cnt] = {
+            'InstanceId': ins['InstanceId'] ,
+            'State': ins['State']['Name'],
+        }
+
+        public_ip, private_ip = 'None','None'
+        if ins['State']['Name'] == 'running':
+            public_ip = ins['NetworkInterfaces'][0]['PrivateIpAddresses'][0]['Association']['PublicIp']
+            private_ip = ins['PrivateIpAddress']
+
+        instances[ins_cnt]['public_ip'] = public_ip
+        instances[ins_cnt]['private_ip'] = private_ip
+
+        #next
         ins_cnt += 1
-        print "---------------------"
-        print "("+str(ins_cnt)+")."+ins['InstanceId'] + " is " + ins['State']['Name']
-        if ins['State']['Name'] != 'running':
-            continue
-        public_ip = ins['NetworkInterfaces'][0]['PrivateIpAddresses'][0]['Association']['PublicIp']
-        private_ip = ins['PrivateIpAddress']
-
-        print "\tpublic IP:\t"+public_ip
-        print "\tprivate IP:\t"+private_ip
+print_instances(instances)
 
 
-print "############## Total:"+str(ins_cnt) + " ##############"
-print "[0 -"+str(len(cmd_map))+"] to execute command on host(s), type anyother to exit."
-print "[0]: run customized command. "
+# Interactive operations
+print "Choose operation:"
 for idx in cmd_map:
     print "["+str(idx)+"]: "+cmd_map[idx]['desc']
 sys.stdout.write(">>>")
-n = int(raw_input())
-if n<0 and not n in cmd_map:
+op = int(raw_input())
+if op not in cmd_map:
     print "Done without operation."
 else:
-    cmd_tmpl = ""
-    if n==0:
-        print "input command to be run:"
-        sys.stdout.write(">>>")
-        cmd_tmpl = str(raw_input())
-    else:
-        cmd_tmpl = cmd_map[n]['cmd']
-    print "Choose host (1-"+str(ins_cnt)+") to execute command, 0 for ALL"
+    print "Choose instances (1-"+str(ins_cnt)+") to operate on"
+    print_instances(instances)
     sys.stdout.write(">>>")
-    host_id = int(raw_input())
-    if host_id<0 or host_id>ins_cnt:
-        print "Wrong host id! Done without operation."
+    target_str = str(raw_input())
+    instance_idxs = []
+    if '-' in target_str:
+        ar = target_str.split('-')
+        for n in range(int(ar[0]), int(ar[1])+1 ):
+            instance_idxs.append(n)
+    elif ',' in target_str:
+        for n in target_str.split(','):
+            instance_idxs.append(int(n))
     else:
-        run_cmd(response, host_id, cmd_tmpl, cluster=args.cluster, )
+        instance_idxs.append(int(target_str))
+    if len(instance_idxs)==0:
+        print "No instance to operate on. Done."
+    else:
+        cmd_tmpl = ""
+        if op==0:# for customized command
+            print "input command to be run:"
+            sys.stdout.write(">>>")
+            cmd_tmpl = str(raw_input())
+        elif op==7: # for terminating EC2 instances
+            terminate_instances(instances, instance_idxs)
+        else:
+            cmd_tmpl = cmd_map[op]['cmd']
+            run_cmd(instances, instance_idxs, cmd_tmpl )
