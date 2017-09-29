@@ -1,9 +1,16 @@
-import boto3,argparse,json,pprint,subprocess,sys
+import boto3,argparse,json,pprint,subprocess,sys,os
+
+DEFAULT_PEM_PATH = '/Users/longer/i.pem'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cluster", required=True, help='Cluster type')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
+parser.add_argument("--pem", default=DEFAULT_PEM_PATH, required=False, help='Private key to login EC2 instances')
 args = parser.parse_args()
+
+if not os.path.isfile(args.pem):
+    print "No PEM file exists in {path}. Need to provide pem file to operate EC2 instances.".format(path=args.pem)
+    sys.exit(1)
 
 ec2 = boto3.client('ec2')
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
