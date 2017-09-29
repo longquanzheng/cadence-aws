@@ -1,11 +1,11 @@
 import boto3,argparse,json,pprint,subprocess,sys,os
 
-DEFAULT_PEM_PATH = '/Users/longer/i.pem'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cluster", required=True, help='Cluster type')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
-parser.add_argument("--pem", default=DEFAULT_PEM_PATH, required=False, help='Private key to login EC2 instances')
+parser.add_argument("--pem", default='/Users/longer/i.pem', required=False, help='Private key to login EC2 instances')
+parser.add_argument("--tag-prefix", default='cadence-dev-longer-')
 args = parser.parse_args()
 
 if not os.path.isfile(args.pem):
@@ -37,7 +37,7 @@ def get_seeds():
     # Get seeds for cassandra/statsd/cadence
     cassandra_seeds, statsd_seeds, cadence_seeds = '127.0.0.1', '127.0.0.1:8125', '127.0.0.1:7933'
     if args.cluster in ['frontend', 'matching', 'history', 'cassandra']:
-        filters[0]['Values'] = [ 'cadence-dev-longer-'+'cassandra' ]
+        filters[0]['Values'] = [ args.tag_prefix+'cassandra' ]
         response = ec2.describe_instances(Filters=filters)
         ips = []
         #Reservations->Instances->PrivateIpAddress
@@ -48,7 +48,7 @@ def get_seeds():
         cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
 
     if args.cluster in ['frontend', 'matching', 'history']:
-        filters[0]['Values'] = [ 'cadence-dev-longer-'+'statsd' ]
+        filters[0]['Values'] = [ args.tag_prefix+'statsd' ]
         response = ec2.describe_instances(Filters=filters)
         ips = []
         try:
@@ -61,7 +61,7 @@ def get_seeds():
         if len(ips)>0:
             statsd_seeds = ips[0]+":8125"
 
-        filters[0]['Values'] = [ 'cadence-dev-longer-'+'frontend' ]
+        filters[0]['Values'] = [ args.tag_prefix+'frontend' ]
         response = ec2.describe_instances(Filters=filters)
         ips = []
         try:
@@ -108,7 +108,7 @@ def print_instances(instances):
 
 
 ######### main function begins here ##########
-filters[0]['Values'] = [ 'cadence-dev-longer-'+args.cluster ]
+filters[0]['Values'] = [ args.tag_prefix+args.cluster ]
 response = ec2.describe_instances(
     Filters=filters
 )

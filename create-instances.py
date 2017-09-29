@@ -1,10 +1,17 @@
 import boto3,argparse,json
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--cluster", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='Cluster type that will be created')
 parser.add_argument("--num", type=int, default=1, help='number of instances that will be created')
 parser.add_argument("--instance-type", default='t2.medium')
 parser.add_argument("--disk-size", type=int, default=30, help="disk size in GiB")
+parser.add_argument("--ec2-image", default='ami-4fffc834', help="ec2 image to install on instance")
+parser.add_argument("--key-name", required=True, help="AWS keypair for EC2 instance(make sure you have the private key(pem file))")
+parser.add_argument("--subnet-id", required=True, help="AWS subnet-id")
+parser.add_argument("--security-group-id", required=True, help="AWS security-group-id")
+parser.add_argument("--tag-prefix", default='cadence-dev-longer-', help="tag prefix associated to EC2 instances")
+
 args = parser.parse_args()
 
 ec2 = boto3.client('ec2')
@@ -25,9 +32,9 @@ response = ec2.run_instances(
             }
         },
     ],
-    ImageId='ami-4fffc834',
+    ImageId=args.ec2_image,
     InstanceType=args.instance_type,
-    KeyName='cadence-longer',
+    KeyName=args.key_name,
     MaxCount=args.num,
     MinCount=args.num,
     Monitoring={
@@ -41,8 +48,8 @@ response = ec2.run_instances(
             'AssociatePublicIpAddress': True,
             'DeleteOnTermination': True,
             'DeviceIndex': 0,
-            'SubnetId': 'subnet-ddaa8184',
-            "Groups":  [ "sg-f0574d9c" ]
+            'SubnetId': args.subnet_id,
+            "Groups":  [ args.security_group_id ]
         },
     ],
 
@@ -52,7 +59,7 @@ response = ec2.run_instances(
             'Tags': [
                 {
                     'Key': 'Name',
-                    'Value': 'cadence-dev-longer-'+args.cluster
+                    'Value': args.tag_prefix+args.cluster
                 },
             ]
         },

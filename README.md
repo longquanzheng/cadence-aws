@@ -9,10 +9,10 @@ See https://github.com/uber/cadence
 
 # Create instances
 ```bash
-python create-instances.py --cluster frontend
+python reate-instances.py --cluster stress --key-name cadence-longer --subnet-id subnet-ddaa8xxx --security-group-id sg-f0574xxx
 Going to request an on-demand EC2 instance...
 ###
-i-0cb47790d9e561f55
+i-0cb47790d9exxxxxx
 [{u'PrivateDnsName': 'ip-10-x-x-x.ec2.internal', u'Primary': True, u'PrivateIpAddress': '10.x.x.x'}]
 
 ```
