@@ -6,10 +6,11 @@ See https://github.com/uber/cadence
 * Python 2.7
 * AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 * Private key for access EC2 instances. Usually from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+* Make sure to the connectivity of subnet and security group provided to create-instances.py 
 
 # Create instances
 ```bash
-python reate-instances.py --cluster stress --key-name cadence-longer --subnet-id subnet-ddaa8xxx --security-group-id sg-f0574xxx
+python create-instances.py --cluster stress --key-name cadence-longer --subnet-id subnet-ddaa8xxx --security-group-id sg-f0574xxx
 Going to request an on-demand EC2 instance...
 ###
 i-0cb47790d9exxxxxx
