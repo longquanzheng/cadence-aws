@@ -122,11 +122,11 @@ response = ec2.describe_instances(
 # for: ssh -i ~/i.pem ec2-user@{public_ip} CMD
 install_service_cmd = ""
 if args.cluster == 'cassandra':
-    install_service_cmd = '\'docker run  -d --name cadence-cassandra  --network=host  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} cassandra:3.9\''
+    install_service_cmd = '\'docker run  -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} cassandra:3.11\''
 elif args.cluster == 'statsd':
-    install_service_cmd = '\'docker run  -d --name cadence-statsd  --network=host  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 kamon/grafana_graphite\''
+    install_service_cmd = '\'docker run  -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 kamon/grafana_graphite\''
 elif args.cluster in ['frontend', 'matching', 'history']:
-    install_service_cmd = '\'docker run  -d --name cadence-{cluster} --network=host  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={cluster}  -p 7933-7935:7933-7935   ubercadence/longer-dev:0.3.1\''
+    install_service_cmd = '\'docker run  -d --network=host --name cadence-{cluster}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={cluster}  -p 7933-7935:7933-7935   ubercadence/longer-dev:0.3.1\''
 
 # TODO
 #'port forwarding cmd': 'ssh -f -N -L LOCAL_PORT:{private_ip}:REMOTE_PORT ec2-user@{public_ip} -i ~/i.pem'
@@ -168,14 +168,13 @@ cmd_map = {
 
     6:{
         'cmd': '-f -N -L 8080:{private_ip}:80',
-        'desc': 'forword remote 80 to 8080'
+        'desc': 'forword remote 80 to local 8080(grafana)'
     },
 
     7:{
         'cmd': 'NOT a real command',
         'desc': 'Terminate EC2 instance'
     },
-
 }
 
 
@@ -212,7 +211,7 @@ op = int(raw_input())
 if op not in cmd_map:
     print "Done without operation."
 else:
-    print "Choose instances (1-"+str(ins_cnt)+") to operate on"
+    print "Choose instances (0-"+str(ins_cnt-1)+") to operate on"
     print_instances(instances)
     sys.stdout.write(">>>")
     target_str = str(raw_input())
