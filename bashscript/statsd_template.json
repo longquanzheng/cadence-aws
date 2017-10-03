@@ -1,0 +1,18 @@
+{
+  "servers" : [ {
+    "port" : "7199",
+    "host" : "127.0.0.1",
+    "alias" : "cassandra-${PRIVATE_IP_UNDER}",
+    "queries" : [ {
+      "obj" : "java.lang:type=Memory",
+      "attr" : [ "HeapMemoryUsage" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "${STATSD_IP}",
+        "bucketType" : "c"
+      }
+	]
+    } ]
+  } ]
+}

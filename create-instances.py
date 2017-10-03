@@ -1,4 +1,4 @@
-import boto3,argparse,json
+import boto3,argparse,json,getpass
 
 
 parser = argparse.ArgumentParser()
@@ -10,7 +10,7 @@ parser.add_argument("--ec2-image", default='ami-4fffc834', help="ec2 image to in
 parser.add_argument("--key-name", required=True, help="AWS keypair for EC2 instance(make sure you have the private key(pem file))")
 parser.add_argument("--subnet-id", required=True, help="AWS subnet-id")
 parser.add_argument("--security-group-id", required=True, help="AWS security-group-id")
-parser.add_argument("--tag-prefix", default='cadence-dev-longer-', help="tag prefix associated to EC2 instances")
+parser.add_argument("--tag-prefix", default='cadence-dev-{username}-'.format(username=getpass.getuser()))
 
 args = parser.parse_args()
 
