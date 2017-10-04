@@ -44,42 +44,48 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
 def get_seeds():
     ############
     # Get seeds for cassandra/statsd/cadence
-    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = '127.0.0.1', '127.0.0.1:8125', '127.0.0.1', '127.0.0.1:7933'
-    if args.cluster != 'statsd':
-        filters[0]['Values'] = [ args.tag_prefix+'cassandra' ]
-        response = ec2.describe_instances(Filters=filters)
-        ips = []
-        #Reservations->Instances->PrivateIpAddress
-        try:
-            map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-        except KeyError as e:
-            print e
-        cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
+    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = '', '', '', ''
 
-        filters[0]['Values'] = [ args.tag_prefix+'statsd' ]
-        response = ec2.describe_instances(Filters=filters)
-        ips = []
-        try:
-            map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-        except KeyError as e:
-            print e
-        #TODO only supports single host statsd
-        if len(ips)>1:
-            raise Exception("more than ONE statsd hosts are now supported yet!")
-        if len(ips)>0:
-            statsd_seeds = ips[0]+":8125"
-            statsd_seed_ip = ips[0]
+    filters[0]['Values'] = [ args.tag_prefix+'cassandra' ]
+    response = ec2.describe_instances(Filters=filters)
+    ips = []
+    #Reservations->Instances->PrivateIpAddress
+    try:
+        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
+    except KeyError as e:
+        print e
+    cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
+    if len(ips)==0:
+        raise Exception("at least one Cassandra host need to be created first!")
 
-        filters[0]['Values'] = [ args.tag_prefix+'frontend' ]
-        response = ec2.describe_instances(Filters=filters)
-        ips = []
-        try:
-            map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-        except KeyError as e:
-            print e
-        if len(ips)>0:
-            # only using one host due to the bug: https://github.com/uber/cadence/issues/358
-            cadence_seeds = ips[0]+":7933"
+    filters[0]['Values'] = [ args.tag_prefix+'statsd' ]
+    response = ec2.describe_instances(Filters=filters)
+    ips = []
+    try:
+        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
+    except KeyError as e:
+        print e
+    if len(ips)==0:
+        raise Exception("at least one statsd host need to be created first!")
+    #TODO only supports single host statsd
+    if len(ips)>1:
+        raise Exception("more than ONE statsd hosts are now supported yet!")
+    if len(ips)>0:
+        statsd_seeds = ips[0]+":8125"
+        statsd_seed_ip = ips[0]
+
+    filters[0]['Values'] = [ args.tag_prefix+'frontend' ]
+    response = ec2.describe_instances(Filters=filters)
+    ips = []
+    try:
+        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
+    except KeyError as e:
+        print e
+    if len(ips)==0:
+        raise Exception("at least one frontend host need to be created first!")
+    if len(ips)>0:
+        # only using one host due to the bug: https://github.com/uber/cadence/issues/358
+        cadence_seeds = ips[0]+":7933"
     return cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds
 
 
@@ -197,8 +203,7 @@ else:
     if len(instance_idxs)==0:
         print "No instance to operate on. Done."
     else:
-        cmd_tmpl = ""
-        if op=='Terminate': # for terminating EC2 instances
+        if op=='tm': # for terminating EC2 instances
             terminate_instances(instances, instance_idxs)
         else:
             cmd_tmpls = cmd_map[op]['cmds']

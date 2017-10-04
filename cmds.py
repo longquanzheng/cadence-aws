@@ -17,19 +17,19 @@ def generate_cmd_map(cluster):
                 'cmd',
             },
             'cmds': ['\'{cmd}\''],
-            'desc': 'run a customized command'
+            'desc': 'Run a customized command'
         },
 
         # install docker
         'dk': {
             'cmds': ['\'bash -s\' < ./script/install_docker.sh'],
-            'desc': 'install docker'
+            'desc': 'Install docker'
            },
 
         # install service
         'sv':{
             'cmds': [install_service_cmd],
-            'desc': 'install service '+cluster
+            'desc': 'Install service '+cluster
           },
 
         # install jmxtrans
@@ -52,24 +52,24 @@ def generate_cmd_map(cluster):
                 # run jmxtrans # NOTE intentionally add 2s delay on the end of bash cmds to let jmx get fully started
                 '\'docker exec -i  cadence-cassandra /bin/bash -c "cd /usr/share/jmxtrans/ && ./bin/jmxtrans.sh start statsd.json && sleep 2 && echo succ"\''
             ],
-            'desc':'install jmxtrans (for Cassandra docker container)'
+            'desc':'Install jmxtrans (for Cassandra docker container)'
         },
 
         # uninstall service
         'us':{
             'cmds': ['\'docker rm -f cadence-{cluster}\''],
-             'desc': 'uninstall service '+cluster
+             'desc': 'Uninstall service '+cluster
           },
 
         # remove image
         'ri': {
             'cmds': ['\'docker rmi -f ubercadence/longer-dev:0.3.1\''],
-            'desc': 'remove cadence image service(for deploying new code)'
+            'desc': 'Remove cadence image service(for deploying new code)'
            },
 
         'lg':{
             'cmds': [''],
-            'desc': 'login EC2 host'
+            'desc': 'Login EC2 host'
           },
 
         'fw':{
@@ -77,7 +77,7 @@ def generate_cmd_map(cluster):
                 'local_port','remote_port'
             },
             'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],
-            'desc': 'forword a remote port(like 80[grafana] and 81([graphite]) to a local'
+            'desc': 'Forword a remote port(like 80[grafana] and 81([graphite]) to a local'
         },
 
         'tm':{
