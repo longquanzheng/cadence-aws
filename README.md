@@ -5,7 +5,7 @@ See https://github.com/uber/cadence
 # Prerequisite
 * Python 2.7
 * AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
-* Private key for access EC2 instances. Usually from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+* Private key for access EC2 instances. Usually from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
 * Make sure to the connectivity of subnet and security group provided to create-instances.py
 
 # Create instances

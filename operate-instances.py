@@ -4,13 +4,10 @@ import cmds
 parser = argparse.ArgumentParser()
 parser.add_argument("--cluster", required=True, help='Cluster type')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
-parser.add_argument("--pem", default='/Users/{username}/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
+parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
 parser.add_argument("--tag-prefix", default='cadence-dev-{username}-'.format(username=getpass.getuser()))
 args = parser.parse_args()
 
-if not os.path.isfile(args.pem):
-    print "No PEM file exists in {path}. Need to provide pem file to operate EC2 instances.".format(path=args.pem)
-    sys.exit(1)
 
 ec2 = boto3.client('ec2')
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
