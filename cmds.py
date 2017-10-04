@@ -16,36 +16,59 @@ def generate_cmd_map(cluster):
             'params':{
                 'cmd',
             },
-            'cmd': '\'{cmd}\'',
-            'desc': 'run customized command'
+            'cmds': ['\'{cmd}\''],
+            'desc': 'run a customized command'
         },
 
         # install docker
         'dk': {
-            'cmd': '\'bash -s\' < ./bashscript/install_docker.sh',
+            'cmds': ['\'bash -s\' < ./script/install_docker.sh'],
             'desc': 'install docker'
            },
 
         # install service
         'sv':{
-            'cmd':install_service_cmd,
+            'cmds': [install_service_cmd],
             'desc': 'install service '+cluster
           },
 
+        # install jmxtrans
+        'jt':{
+            'cmds' : [
+                # upload statsd.json
+                '\'cat > statsd_template.json \' < ./script/statsd_template.json ',
+                'docker cp statsd_template.json cadence-cassandra:statsd_template.json',
+
+                # install  jmxtrans
+                '\'docker exec -i  cadence-cassandra apt-get update\'',
+                '\'docker exec -i  cadence-cassandra apt-get install wget -y\'',
+                '\'docker exec -i  cadence-cassandra apt-get install openjdk-8-jdk -y\'',
+                '\'docker exec -i  cadence-cassandra apt-get install vim -y\'',
+                '\'docker exec -i  cadence-cassandra apt-get install gettext -y\'',
+                '\'docker exec -i  cadence-cassandra wget http://central.maven.org/maven2/org/jmxtrans/jmxtrans/267/jmxtrans-267.deb\'',
+                '\'docker exec -i  cadence-cassandra dpkg -i jmxtrans-267.deb\'',
+                # generate statsd.json based on template TODO there is a bug about bash export command...
+                '\"docker exec -i  cadence-cassandra /bin/bash -c \\\" export STATSD_IP={statsd_seed_ip} && export PRIVATE_IP_UNDER={private_ip_under} && envsubst < statsd_template.json > /usr/share/jmxtrans/statsd.json \\\" \"',
+                # run jmxtrans # NOTE intentionally add 2s delay on the end of bash cmds to let jmx get fully started
+                '\'docker exec -i  cadence-cassandra /bin/bash -c "cd /usr/share/jmxtrans/ && ./bin/jmxtrans.sh start statsd.json && sleep 2 && echo succ"\''
+            ],
+            'desc':'install jmxtrans (for Cassandra docker container)'
+        },
+
         # uninstall service
         'us':{
-            'cmd': '\'docker rm -f cadence-{cluster}\'',
+            'cmds': ['\'docker rm -f cadence-{cluster}\''],
              'desc': 'uninstall service '+cluster
           },
 
         # remove image
         'ri': {
-            'cmd': '\'docker rmi -f ubercadence/longer-dev:0.3.1\'',
+            'cmds': ['\'docker rmi -f ubercadence/longer-dev:0.3.1\''],
             'desc': 'remove cadence image service(for deploying new code)'
            },
 
         'lg':{
-            'cmd': '',
+            'cmds': [''],
             'desc': 'login EC2 host'
           },
 
@@ -53,12 +76,12 @@ def generate_cmd_map(cluster):
             'params':{
                 'local_port','remote_port'
             },
-            'cmd': '-f -N -L {local_port}:{private_ip}:{remote_port}',
+            'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],
             'desc': 'forword a remote port(like 80[grafana] and 81([graphite]) to a local'
         },
 
         'tm':{
-            'cmd': 'NOT a real command. SPECIAL CASE.',
+            'cmds': ['NOT a real command. SPECIAL CASE.'],
             'desc': 'Terminate EC2 instance'
         },
     }

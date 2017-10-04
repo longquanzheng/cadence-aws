@@ -15,8 +15,9 @@ if not os.path.isfile(args.pem):
 ec2 = boto3.client('ec2')
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
 
-def run_cmd(instances, instance_idxs, cmd_tmpl, params):
-    cassandra_seeds, statsd_seeds, cadence_seeds = get_seeds()
+def run_cmd(instances, instance_idxs, cmd_tmpls, params):
+    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = get_seeds()
+
     for idx in instance_idxs:
         if idx not in instances:
             print " #"+str(idx)+" instance doesn't exist, skip..."
@@ -25,22 +26,26 @@ def run_cmd(instances, instance_idxs, cmd_tmpl, params):
             print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."
             continue
 
-        cmd = "ssh -i {ec2_pem_path} ec2-user@".format(ec2_pem_path=args.pem)\
-                + instances[idx]['public_ip'] + " "\
-                +cmd_tmpl.format(\
-            public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'], cassandra_seeds=cassandra_seeds,
-            statsd_seeds=statsd_seeds, cadence_seeds=cadence_seeds, cluster=args.cluster, **params)
-        print "\n <<<running: "+cmd+">>>"
-        if not args.dry_run :
-            subprocess.call(cmd,shell=True)
+        #TODO there is a bug about bash export command ...
+        private_ip_under = instances[idx]['private_ip'].replace('.','_')
+
+        for cmd_tmpl in cmd_tmpls:
+            cmd = "ssh -i {ec2_pem_path} ec2-user@".format(ec2_pem_path=args.pem)\
+                    + instances[idx]['public_ip'] + " "\
+                    +cmd_tmpl.format(\
+                public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'],private_ip_under=private_ip_under, cassandra_seeds=cassandra_seeds,
+                statsd_seeds=statsd_seeds, statsd_seed_ip=statsd_seed_ip, cadence_seeds=cadence_seeds, cluster=args.cluster, **params)
+            print "\n <<<running: "+cmd+">>>"
+            if not args.dry_run :
+                subprocess.call(cmd,shell=True)
 
 
 
 def get_seeds():
     ############
     # Get seeds for cassandra/statsd/cadence
-    cassandra_seeds, statsd_seeds, cadence_seeds = '127.0.0.1', '127.0.0.1:8125', '127.0.0.1:7933'
-    if args.cluster in ['frontend', 'matching', 'history', 'cassandra']:
+    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = '127.0.0.1', '127.0.0.1:8125', '127.0.0.1', '127.0.0.1:7933'
+    if args.cluster != 'statsd':
         filters[0]['Values'] = [ args.tag_prefix+'cassandra' ]
         response = ec2.describe_instances(Filters=filters)
         ips = []
@@ -51,7 +56,6 @@ def get_seeds():
             print e
         cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
 
-    if args.cluster in ['frontend', 'matching', 'history']:
         filters[0]['Values'] = [ args.tag_prefix+'statsd' ]
         response = ec2.describe_instances(Filters=filters)
         ips = []
@@ -64,6 +68,7 @@ def get_seeds():
             raise Exception("more than ONE statsd hosts are now supported yet!")
         if len(ips)>0:
             statsd_seeds = ips[0]+":8125"
+            statsd_seed_ip = ips[0]
 
         filters[0]['Values'] = [ args.tag_prefix+'frontend' ]
         response = ec2.describe_instances(Filters=filters)
@@ -75,7 +80,7 @@ def get_seeds():
         if len(ips)>0:
             # only using one host due to the bug: https://github.com/uber/cadence/issues/358
             cadence_seeds = ips[0]+":7933"
-    return cassandra_seeds, statsd_seeds, cadence_seeds
+    return cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds
 
 
 
@@ -196,5 +201,5 @@ else:
         if op=='Terminate': # for terminating EC2 instances
             terminate_instances(instances, instance_idxs)
         else:
-            cmd_tmpl = cmd_map[op]['cmd']
-            run_cmd(instances, instance_idxs, cmd_tmpl, params )
+            cmd_tmpls = cmd_map[op]['cmds']
+            run_cmd(instances, instance_idxs, cmd_tmpls, params )
