@@ -7,9 +7,11 @@ See https://github.com/uber/cadence
 
 ## Prerequisite
 * Python 2.7
-* AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
-* Private key for access EC2 instances. Usually from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
-* Make sure to the connectivity of subnet and security group provided to create-instances.py
+* Boto3 for python: https://github.com/boto/boto3
+* AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html  . Make sure you have credentials for default: run "aws configure" to check.
+* Prepare a private key for access EC2 instances. Usually it is from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
+* Prepare at least one subnet(please save the subnet id) for creating EC2 instances. Make sure your subnet doesn't have special rules to block traffic.
+* Prepare a security group(please save the security group id) for creating EC2 Instaces. Make sure the security group allow ssh from outside and any TCP traffic inside.
 
 
 ## Step one: create initial ec2 instances
