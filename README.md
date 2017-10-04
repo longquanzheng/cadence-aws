@@ -1,14 +1,22 @@
 # cadence-aws
-Running Cadence on AWS
+Create/manage Cadence service on AWS
 See https://github.com/uber/cadence
 
-# Prerequisite
+
+# How?
+
+## Prerequisite
 * Python 2.7
 * AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 * Private key for access EC2 instances. Usually from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
 * Make sure to the connectivity of subnet and security group provided to create-instances.py
 
-# Create instances
+
+## Step one: create initial ec2 instances
+1. Create at least one instance for cassandra/frontend/matching/history clusters respectively
+2. Create EXACTLY one instance for statsd cluster, since we don't support distributed mode yet.
+
+* Example of create-instances.py
 ```bash
 python create-instances.py --cluster stress --key-name cadence-longer --subnet-id subnet-ddaa8xxx --security-group-id sg-f0574xxx
 Going to request an on-demand EC2 instance...
@@ -18,8 +26,24 @@ i-0cb47790d9exxxxxx
 
 ```
 
+## Step two: config/install Statsd-Graphite-Grafana cluster
+1. Install docker
+2. Install statsd service
+3. Forward remote 80/81 ports to your local ports for Graphite/Grafana
 
-# Operate instances
+## Step three: config/install Cassandra cluster
+1. Install docker
+2. Install Cassandra service
+3. Install jmxtrans
+4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
+
+## Step four: config/install Cadence frontend/matching/history cluster
+1. Install docker
+2. Install frontend/matching/history service
+3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
+
+
+## Example of operate-instances.py
 ```bash
 python operate-instances.py --cluster frontend
 ---------------------
@@ -47,24 +71,3 @@ Choose operation:
 [ ri ]:  Remove cadence image service(for deploying new code)
 >>> dk
 ```
-
-# How?
-## Step one: create initial ec2 instances
-1. Create at least one instance for cassandra/frontend/matching/history clusters respectively
-2. Create EXACTLY one instance for statsd cluster, since we don't support distributed mode yet.
-
-## Step two: config/install Statsd-Graphite-Grafana cluster
-1. Install docker
-2. Install statsd service
-3. Forward remote 80/81 ports to your local ports for Graphite/Grafana
-
-## Step three: config/install Cassandra cluster
-1. Install docker
-2. Install Cassandra service
-3. Install jmxtrans
-4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
-
-## Step four: config/install Cadence frontend/matching/history cluster
-1. Install docker
-2. Install frontend/matching/history service
-3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
