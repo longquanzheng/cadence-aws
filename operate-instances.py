@@ -2,10 +2,10 @@ import boto3,argparse,json,pprint,subprocess,sys,os,getpass
 import cmds
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cluster", required=True, help='Cluster type')
+parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
-parser.add_argument("--tag-prefix", default='cadence-dev-{username}-'.format(username=getpass.getuser()))
+parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}-'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
 args = parser.parse_args()
 
 
@@ -31,7 +31,7 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
                     + instances[idx]['public_ip'] + " "\
                     +cmd_tmpl.format(\
                 public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'],private_ip_under=private_ip_under, cassandra_seeds=cassandra_seeds,
-                statsd_seeds=statsd_seeds, statsd_seed_ip=statsd_seed_ip, cadence_seeds=cadence_seeds, cluster=args.cluster, **params)
+                statsd_seeds=statsd_seeds, statsd_seed_ip=statsd_seed_ip, cadence_seeds=cadence_seeds, application=args.application, **params)
             print "\n <<<running: "+cmd+">>>"
             if not args.dry_run :
                 subprocess.call(cmd,shell=True)
@@ -43,7 +43,7 @@ def get_seeds():
     # Get seeds for cassandra/statsd/cadence
     cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = '', '', '', ''
 
-    filters[0]['Values'] = [ args.tag_prefix+'cassandra' ]
+    filters[0]['Values'] = [ args.deployment_group+'cassandra' ]
     response = ec2.describe_instances(Filters=filters)
     ips = []
     #Reservations->Instances->PrivateIpAddress
@@ -55,7 +55,7 @@ def get_seeds():
     if len(ips)==0:
         raise Exception("at least one Cassandra host need to be created first!")
 
-    filters[0]['Values'] = [ args.tag_prefix+'statsd' ]
+    filters[0]['Values'] = [ args.deployment_group+'statsd' ]
     response = ec2.describe_instances(Filters=filters)
     ips = []
     try:
@@ -71,7 +71,7 @@ def get_seeds():
         statsd_seeds = ips[0]+":8125"
         statsd_seed_ip = ips[0]
 
-    filters[0]['Values'] = [ args.tag_prefix+'frontend' ]
+    filters[0]['Values'] = [ args.deployment_group+'frontend' ]
     response = ec2.describe_instances(Filters=filters)
     ips = []
     try:
@@ -148,7 +148,7 @@ def parse_ec2_response(response):
 ##############################################
 ######### main function begins here ##########
 ##############################################
-filters[0]['Values'] = [ args.tag_prefix+args.cluster ]
+filters[0]['Values'] = [ args.deployment_group+args.application ]
 response = ec2.describe_instances(
     Filters=filters
 )
@@ -159,7 +159,7 @@ if ins_cnt<=0:
     print "No ec2 instance to operate."
     sys.exit(0)
 
-cmd_map = cmds.generate_cmd_map(args.cluster)
+cmd_map = cmds.generate_cmd_map(args.application)
 # Interactive operations
 print "Choose operation:"
 for idx in cmd_map:
