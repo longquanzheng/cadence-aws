@@ -15,11 +15,8 @@ See https://github.com/uber/cadence
 * Prepare a security group(please save the security group id) for creating EC2 Instaces. Make sure the security group allow ssh from outside and any TCP traffic inside.
 
 
-## Step one: create initial ec2 instances
-1. Create at least one instance for cassandra/frontend/matching/history applications respectively
-2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
-
-* Document of create-instances.py
+## Docs & Example of create-instances.py
+Better to spend some time to understand this script for Step one
 ```bash
 $ python create-instances.py --help
 usage: create-instances.py [-h] --application
@@ -61,32 +58,16 @@ i-xxxxxxxxxxxxxxxx
 
 ```
 
+## Step one: create initial ec2 instances
+1. Create at least one instance for cassandra/frontend/matching/history applications respectively
+2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
 
-
-
-**The rest of the instructions are all executed by operate-instances.py**
-**See example at the bottom**
-
-## Step two: config/install Statsd-Graphite-Grafana application
-1. Install docker
-2. Install statsd service
-3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports)
-4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
-5. Open http://localhost:8080 for Grafana, username and password are both "admin".
-
-## Step three: config/install Cassandra application
-1. Install docker
-2. Install Cassandra service
-3. Install jmxtrans
-4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
-
-## Step four: config/install Cadence frontend/matching/history application
-1. Install docker
-2. Install frontend/matching/history service
-3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
 
 
 ## Docs & Example of operate-instances.py
+The rest of the instructions are all executed by operate-instances.py
+It's better to understand the script before going to Step 2 and the rests.
+
 ```bash
 $ python operate-instances.py --help
 usage: operate-instances.py [-h] --application
@@ -132,3 +113,27 @@ Choose operation:
 [ ri ]:  Remove cadence image service(for deploying new code)
 >>> dk
 ```
+
+## Step two: config/install Statsd-Graphite-Grafana application
+1. Install docker >>>dk
+2. Install statsd service >>>sv
+3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports) >>>fw
+4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
+5. Open http://localhost:8080 for Grafana, username and password are both "admin".
+
+## Step three: config/install Cassandra application
+1. Install docker >>>dk
+2. Install Cassandra service >>>dv
+3. Install jmxtrans >>>jt
+4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
+
+## Step four: config/install Cadence frontend/matching/history application
+1. Install docker >>>dk
+2. Install frontend/matching/history service >>>sv
+3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
+
+## And then...
+You are all DONE for your Cadence cluster!
+It's now time to explore it using some other command like login( >>>lg ) to see what is inside.
+And also you can setup the stress host(--application stress) and run some sample/stress test against your cluster. Check out here: https://github.com/samarabbas/cadence-samples
+
