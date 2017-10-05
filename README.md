@@ -28,13 +28,18 @@ i-xxxxxxxxxxxxxxxx
 
 ```
 
+
+
+
 **The rest of the instructions are all executed by operate-instances.py**
 **See example at the bottom**
 
 ## Step two: config/install Statsd-Graphite-Grafana cluster
 1. Install docker
 2. Install statsd service
-3. Forward remote 80(Grafana) or 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports)
+3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports)
+4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
+5. Open http://localhost:8080 for Grafana, username and password are both "admin".
 
 ## Step three: config/install Cassandra cluster
 1. Install docker
