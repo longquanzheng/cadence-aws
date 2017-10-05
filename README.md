@@ -60,8 +60,23 @@ i-xxxxxxxxxxxxxxxx
 
 ## Step one: create initial ec2 instances
 1. Create at least one instance for cassandra/frontend/matching/history applications respectively
-2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
+```bash
+$ python create-instances.py -a cassandra --num 3 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a frontend --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a matching --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a history --num 4 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
 
+2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
+```bash
+$ python create-instances.py -a statsd --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
 
 
 ## Docs & Example of operate-instances.py
@@ -115,6 +130,9 @@ Choose operation:
 ```
 
 ## Step two: config/install Statsd-Graphite-Grafana application
+```bash
+python operate-instances.py -a statsd
+```
 1. Install docker >>>dk
 2. Install statsd service >>>sv
 3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports) >>>fw
@@ -122,18 +140,37 @@ Choose operation:
 5. Open http://localhost:8080 for Grafana, username and password are both "admin".
 
 ## Step three: config/install Cassandra application
+```bash
+python operate-instances.py -a cassandra
+```
 1. Install docker >>>dk
 2. Install Cassandra service >>>dv
 3. Install jmxtrans >>>jt
 4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
 
 ## Step four: config/install Cadence frontend/matching/history application
+```bash
+python operate-instances.py -a frontend
+```
+```bash
+python operate-instances.py -a matching
+```
+```bash
+python operate-instances.py -a history
+```
 1. Install docker >>>dk
 2. Install frontend/matching/history service >>>sv
 3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
 
 ## And then...
 You are all DONE for your Cadence cluster!
-It's now time to explore it using some other command like login( >>>lg ) to see what is inside.
-And also you can setup the stress host(--application stress) and run some sample/stress test against your cluster. Check out here: https://github.com/samarabbas/cadence-samples
 
+It's now time to explore it using some other command like login( >>>lg ) to see what is inside.
+
+And also you can setup the stress host(--application stress) and run some sample/stress test against your cluster. Check out here: https://github.com/samarabbas/cadence-samples
+```bash
+$ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+python operate-instances.py -a stress
+```
