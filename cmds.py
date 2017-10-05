@@ -77,7 +77,7 @@ def generate_cmd_map(cluster):
                 'local_port','remote_port'
             },
             'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],
-            'desc': 'Forword a remote port(like 80[grafana] and 81([graphite]) to a local'
+            'desc': 'Forword a remote port(like 80[grafana] and 81([graphite]) to a local port(like 8080/8081)'
         },
 
         'tm':{
