@@ -8,7 +8,8 @@ See https://github.com/uber/cadence
 ## Prerequisite
 * Python 2.7 (not tested in other versions)
 * Boto3 for python: https://github.com/boto/boto3
-* AWS credential: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html  . Make sure you have credentials for default: run "aws configure" to check.
+* Install AWSCLI if you don't have it: http://docs.aws.amazon.com/cli/latest/userguide/awscli-install-bundle.html
+* Set default AWS credential and region. Run "aws configure" to set them. See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html 
 * Prepare a private key for access EC2 instances. Usually it is from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
 * Prepare at least one subnet(please save the subnet id) for creating EC2 instances. Make sure your subnet doesn't have special rules to block traffic.
 * Prepare a security group(please save the security group id) for creating EC2 Instaces. Make sure the security group allow ssh from outside and any TCP traffic inside.
@@ -18,9 +19,9 @@ See https://github.com/uber/cadence
 1. Create at least one instance for cassandra/frontend/matching/history clusters respectively
 2. Create EXACTLY one instance for statsd cluster, since we don't support distributed mode yet.
 
-* Example of create-instances.py
+* Example of create-instances.py Replace values of --key-name/--subnet-id/--security-group-id with what you've prepared in *Prerequisite*
 ```bash
-python create-instances.py --cluster stress --key-name cadence-longer --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+python create-instances.py --cluster stress --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
 Going to request an on-demand EC2 instance...
 ###
 i-xxxxxxxxxxxxxxxx
