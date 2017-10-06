@@ -81,8 +81,7 @@ def get_seeds():
     if len(ips)==0:
         raise Exception("at least one frontend host need to be created first!")
     if len(ips)>0:
-        # only using one host due to the bug: https://github.com/uber/cadence/issues/358
-        cadence_seeds = ips[0]+":7933"
+        cadence_seeds = reduce(lambda ip1,ip2: ip1+":7933,"+ip2+":7933", ips)
     return cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds
 
 
