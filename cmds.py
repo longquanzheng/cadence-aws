@@ -17,9 +17,13 @@ def generate_cmd_map(application):
             'num_history_shards': {
                 'default': '4',
                 'choices': ['4', '16384']
+            },
+            'version':{
+                'default': '0.3.2',
+                'choices': ['0.3.2']
             }
         }
-        install_service_cmd = '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/longer-dev:0.3.1\''
+        install_service_cmd = '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
 
 
     cmd_map = {
