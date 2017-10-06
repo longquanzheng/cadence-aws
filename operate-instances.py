@@ -173,9 +173,32 @@ else:
     params = {}
     if 'params' in cmd_map[op]:
         for p in cmd_map[op]['params']:
-            print "input {param_name}:".format(param_name=p)
-            sys.stdout.write(">>>")
-            params[p] = '\''+str(raw_input())+'\''
+            if 'default' in cmd_map[op]['params'][p]:
+                default = str(cmd_map[op]['params'][p]['default'])
+                default_desc = "["+default+"]"
+            else:
+                default = default_desc = ''
+
+            if 'choices' in cmd_map[op]['params'][p]:
+                choices = map(str, cmd_map[op]['params'][p]['choices'])
+                choices_desc = "("+",".join(choices)+")"
+            else:
+                choices = []
+                choices_desc = ''
+
+
+            while True:
+                print "input {param_name}{default}{choices}:".format(param_name=p, default=default_desc,choices=choices_desc)
+                sys.stdout.write(">>>")
+                params[p] = str(raw_input())
+                if len(params[p])<1:
+                    params[p] = default
+
+                if len(choices)>0 and params[p] not in choices:
+                    print "{param_name} must be one of: {choices}".format(param_name=p, choices=str(choices_desc))
+                    continue
+                else:
+                    break
 
     # choose instance to operate on, if only one, then don't aks for it
     instance_idxs = []
