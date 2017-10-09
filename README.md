@@ -128,6 +128,24 @@ Choose operation:
 [ ri ]:  Remove cadence image service(for deploying new code)
 >>> dk
 ```
+After typing "dk" and "ENTER", it prompts to ask you choosing instances to operate on. You can type "*0-N*" to operate on multiple instances at a time:
+```
+Choose instances (0-2) to operate on
+---------------------
+(0).i-xxxxxxxxxxxxxxxx is running
+	public IP:	x.x.x.x
+	private IP:	10.x.x.x
+---------------------
+(1).i-xxxxxxxxxxxxxxxx is running
+	public IP:	x.x.x.x
+	private IP:	10.x.x.x
+---------------------
+(2).i-xxxxxxxxxxxxxxxx is running
+	public IP:	x.x.x.x
+	private IP:	10.x.x.x
+############## Total:3 ##############
+>>>0-2
+```
 
 ## Step two: config/install Statsd-Graphite-Grafana application
 ```bash
