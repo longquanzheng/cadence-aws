@@ -152,7 +152,6 @@ Choose instances (0-2) to operate on
 python operate-instances.py -a statsd
 ```
 1. Install docker >>>dk  
-**NOTE: You can always type "0-N" to operate on multiple instances at a time** 
 2. Install statsd service >>>sv
 3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports) >>>fw
 4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
@@ -163,7 +162,9 @@ python operate-instances.py -a statsd
 python operate-instances.py -a cassandra
 ```
 1. Install docker >>>dk
+
 **NOTE: You can always type "0-N" to operate on multiple instances at a time** 
+
 2. Install Cassandra service >>>dv
 3. Install jmxtrans >>>jt
 4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
