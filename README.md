@@ -165,7 +165,7 @@ python operate-instances.py -a cassandra
 
 **NOTE: You can always type "0-N" to operate on multiple instances at a time** 
 
-2. Install Cassandra service >>>dv
+2. Install Cassandra service >>>sv
 3. Install jmxtrans >>>jt
 4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
 
