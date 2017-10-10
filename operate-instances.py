@@ -43,7 +43,7 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
 def parse_ips_from_ec2_response(response):
     ips = []
     #Reservations->Instances->PrivateIpAddress
-    map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']) if 'PrivateIpAddress' in i else ipsexi, r['Instances'] ), response['Reservations'])
+    map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']) if 'PrivateIpAddress' in i else ips, r['Instances'] ), response['Reservations'])
     return ips
 
 def get_seeds():
