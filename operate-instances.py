@@ -1,6 +1,9 @@
 import boto3,argparse,json,pprint,subprocess,sys,os,getpass
 import cmds
 
+pp = pprint.PrettyPrinter()
+#pp.pprint(response)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
@@ -37,6 +40,11 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
                 subprocess.call(cmd,shell=True)
 
 
+def parse_ips_from_ec2_response(response):
+    ips = []
+    #Reservations->Instances->PrivateIpAddress
+    map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']) if 'PrivateIpAddress' in i else ipsexi, r['Instances'] ), response['Reservations'])
+    return ips
 
 def get_seeds():
     ############
@@ -45,23 +53,14 @@ def get_seeds():
 
     filters[0]['Values'] = [ args.deployment_group+'cassandra' ]
     response = ec2.describe_instances(Filters=filters)
-    ips = []
-    #Reservations->Instances->PrivateIpAddress
-    try:
-        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-    except KeyError as e:
-        print e
+    ips = parse_ips_from_ec2_response(response)
     cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
     if len(ips)==0:
         raise Exception("at least one Cassandra host need to be created first!")
 
     filters[0]['Values'] = [ args.deployment_group+'statsd' ]
     response = ec2.describe_instances(Filters=filters)
-    ips = []
-    try:
-        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-    except KeyError as e:
-        print e
+    ips = parse_ips_from_ec2_response(response)
     if len(ips)==0:
         raise Exception("at least one statsd host need to be created first!")
     #TODO only supports single host statsd
@@ -73,11 +72,8 @@ def get_seeds():
 
     filters[0]['Values'] = [ args.deployment_group+'frontend' ]
     response = ec2.describe_instances(Filters=filters)
-    ips = []
-    try:
-        map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']), r['Instances'] ), response['Reservations'])
-    except KeyError as e:
-        print e
+    ips = parse_ips_from_ec2_response(response)
+
     if len(ips)==0:
         raise Exception("at least one frontend host need to be created first!")
     if len(ips)>0:

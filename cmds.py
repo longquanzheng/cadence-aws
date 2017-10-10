@@ -92,7 +92,7 @@ def generate_cmd_map(application):
             'params':{
                 'local_port': {
                     'default': '8080',
-                    'choices': ['8080', '8081']
+                    'choices': ['8080', '8081','7680','7681']
                 },
                 'remote_port':{
                     'default': '80',
