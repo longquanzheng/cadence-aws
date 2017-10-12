@@ -78,6 +78,10 @@ $ python create-instances.py -a history --num 4 --key-name cadence-KEY --subnet-
 $ python create-instances.py -a statsd --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
 ```
 
+3. Create one instance for stress application. You can create more if needed.
+```bash
+$ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
 
 ## Docs & Example of operate-instances.py
 The rest of the instructions are all executed by operate-instances.py
@@ -125,7 +129,6 @@ Choose operation:
 [ fw ]:  Forword a remote port(like 80[grafana] and 81([graphite]) to a local port(like 8080/8081)
 [ sv ]:  Install service frontend
 [ us ]:  Uninstall service frontend
-[ ri ]:  Remove cadence image service(for deploying new code)
 >>> dk
 ```
 After typing "dk" and "ENTER", it prompts to ask you choosing instances to operate on. You can type "*0-N*" to operate on multiple instances at a time:
@@ -163,7 +166,7 @@ python operate-instances.py -a cassandra
 ```
 1. Install docker >>>dk
 
-**NOTE: You can always type "0-N" to operate on multiple instances at a time** 
+**NOTE: You can always type "0-N" to operate on multiple instances at a time**
 
 2. Install Cassandra service >>>sv
 3. Install jmxtrans >>>jt
@@ -182,6 +185,15 @@ python operate-instances.py -a history
 1. Install docker >>>dk
 2. Install frontend/matching/history service >>>sv
 3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
+
+## Step five: config/install Cadence stress(bench) test application
+```bash
+python operate-instances.py -a stress
+```
+1. Install service >>> sv
+2. Forward stress service port(9696) to local port(like 9696) >>>fw
+3. Start your stress test running by visit http://localhost:9696/start?test=basic
+4. Go to Graphite to make sure that test is emitting metrics(In Tree: Metrics->stats->counters->cadence-bench)
 
 ## And then...
 You are all DONE for your Cadence cluster!
