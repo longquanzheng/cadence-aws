@@ -28,9 +28,9 @@ def generate_cmd_map(application):
     elif application == 'stress':
         install_service_cmd = [
             #install golang/glide and checkout code
-            '\'bash -s\' < ./script/install_bench_test.sh',
+            '\'bash -s\' < ./templates/install_bench_test.sh',
             # upload the config template to config folder
-            '\'cat > bench_template.yaml \' < ./script/bench_template.yaml ',
+            '\'cat > bench_template.yaml \' < ./templates/bench_template.yaml ',
             # generate a config based on template
             '\'export cadence_frontend_json={cadence_frontend_json} && export statsd_ip_port=\\"{statsd_seeds}\\" && envsubst < bench_template.yaml > /home/ec2-user/go/src/github.com/uber/cadence/config/bench/aws.yaml \'',
             # start stress test service(HTTP on 9696)
@@ -54,7 +54,7 @@ def generate_cmd_map(application):
 
         # install docker
         'dk': {
-            'cmds': ['\'bash -s\' < ./script/install_docker.sh'],
+            'cmds': ['\'bash -s\' < ./templates/install_docker.sh'],
             'desc': 'Install docker'
            },
 
@@ -69,7 +69,7 @@ def generate_cmd_map(application):
         'jt':{
             'cmds' : [
                 # upload statsd.json
-                '\'cat > statsd_template.json \' < ./script/statsd_template.json ',
+                '\'cat > statsd_template.json \' < ./templates/statsd_template.json ',
                 'docker cp statsd_template.json cadence-cassandra:statsd_template.json',
 
                 # install  jmxtrans
