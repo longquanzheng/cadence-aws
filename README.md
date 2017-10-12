@@ -200,10 +200,4 @@ You are all DONE for your Cadence cluster!
 
 It's now time to explore it using some other command like login( >>>lg ) to see what is inside.
 
-And also you can setup the stress host(--application stress) and run some sample/stress test against your cluster. Check out here: https://github.com/samarabbas/cadence-samples
-```bash
-$ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-```bash
-python operate-instances.py -a stress
-```
+And also you can run some sample test. Check out here: https://github.com/samarabbas/cadence-samples
