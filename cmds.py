@@ -36,7 +36,7 @@ def generate_cmd_map(application):
             # start stress test service(HTTP on 9696)
             '\' cd /home/ec2-user/go/src/github.com/uber/cadence && nohup ./cadence-bench-test aws &>stress.log & \'& ',
             # check log to see if having any problem
-            'sleep 1 &&  tail /home/ec2-user/go/src/github.com/uber/cadence/stress.log '
+            '\' sleep 1 &&  /bin/cat /home/ec2-user/go/src/github.com/uber/cadence/stress.log \''
         ]
         uninstall_service_cmd = [
             'sudo pkill cadence',
