@@ -16,7 +16,7 @@ ec2 = boto3.client('ec2')
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
 
 def run_cmd(instances, instance_idxs, cmd_tmpls, params):
-    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = get_seeds()
+    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds, cadence_frontend_json = get_seeds()
 
     for idx in instance_idxs:
         if idx not in instances:
@@ -34,7 +34,8 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
                     + instances[idx]['public_ip'] + " "\
                     +cmd_tmpl.format(\
                 public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'],private_ip_under=private_ip_under, cassandra_seeds=cassandra_seeds,
-                statsd_seeds=statsd_seeds, statsd_seed_ip=statsd_seed_ip, cadence_seeds=cadence_seeds, application=args.application, **params)
+                statsd_seeds=statsd_seeds, statsd_seed_ip=statsd_seed_ip, cadence_seeds=cadence_seeds, cadence_frontend_json = cadence_frontend_json,
+                application=args.application, **params)
             print "\n <<<running: "+cmd+">>>"
             if not args.dry_run :
                 subprocess.call(cmd,shell=True)
@@ -49,7 +50,7 @@ def parse_ips_from_ec2_response(response):
 def get_seeds():
     ############
     # Get seeds for cassandra/statsd/cadence
-    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds = '', '', '', ''
+    cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds, cadence_frontend_json = '', '', '', '', ''
 
     filters[0]['Values'] = [ args.deployment_group+'cassandra' ]
     response = ec2.describe_instances(Filters=filters)
@@ -78,7 +79,12 @@ def get_seeds():
         raise Exception("at least one frontend host need to be created first!")
     if len(ips)>0:
         cadence_seeds = reduce(lambda ip1,ip2: ip1+":7933,"+ip2+":7933", ips)
-    return cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds
+
+    ip_ports = map(lambda ip: ip+":7933", ips)
+    cadence_frontend_json = json.dumps(ip_ports)
+    cadence_frontend_json = cadence_frontend_json.replace('"','\\"')
+    cadence_frontend_json = cadence_frontend_json.replace(' ','')
+    return cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds, cadence_frontend_json
 
 
 

@@ -1,13 +1,14 @@
 
 # for: ssh -i ~/i.pem ec2-user@{public_ip} CMD
 def generate_cmd_map(application):
-    install_service_cmd = ""
+    install_service_cmd = []
+    uninstall_service_cmd = ['\'docker rm -f cadence-{application}\'']
     params={}
     if application == 'cassandra':
         #TODO --network=host is not working with Cassandra due to https://github.com/odota/core/issues/1121
-        install_service_cmd = '\'docker run  -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\''
+        install_service_cmd = [ '\'docker run  -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\'' ]
     elif application == 'statsd':
-        install_service_cmd = '\'docker run  -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\''
+        install_service_cmd = ['\'docker run  -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\'']
     elif application in ['frontend', 'matching', 'history']:
         params={
             'log_level': {
@@ -23,9 +24,22 @@ def generate_cmd_map(application):
                 'choices': ['0.3.2']
             }
         }
-        install_service_cmd = '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
+        install_service_cmd = ['\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\'']
     elif application == 'stress':
-        install_service_cmd = '\'bash -s\' < ./script/install_bench_test.sh'
+        install_service_cmd = [
+            #install golang/glide and checkout code
+            '\'bash -s\' < ./script/install_bench_test.sh',
+            # upload the config template to config folder
+            '\'cat > bench_template.yaml \' < ./script/bench_template.yaml ',
+            # generate a config based on template
+            '\'export cadence_frontend_json={cadence_frontend_json} && export statsd_ip_port=\\"{statsd_seeds}\\" && envsubst < bench_template.yaml > /home/ec2-user/go/src/github.com/uber/cadence/config/bench/aws.yaml \'',
+            # start stress test service(HTTP on 9696)
+            '\' cd /home/ec2-user/go/src/github.com/uber/cadence && nohup ./cadence-bench-test aws &>stress.log & \'& '
+        ]
+        uninstall_service_cmd = [
+            'sudo pkill cadence',
+            'rm -rf /home/ec2-user/go',
+        ]
 
     cmd_map = {
         'cc': {
@@ -45,7 +59,7 @@ def generate_cmd_map(application):
         # install service
         'sv':{
             'params': params,
-            'cmds': [install_service_cmd],
+            'cmds': install_service_cmd,
             'desc': 'Install service '+application
           },
 
@@ -74,7 +88,7 @@ def generate_cmd_map(application):
 
         # uninstall service
         'us':{
-            'cmds': ['\'docker rm -f cadence-{application}\''],
+            'cmds': uninstall_service_cmd,
              'desc': 'Uninstall service '+application
           },
 
@@ -90,7 +104,7 @@ def generate_cmd_map(application):
                 },
                 'remote_port':{
                     'default': '80',
-                    'choices': ['80', '81']
+                    'choices': ['80', '81', '9696','9697','9698' ]
                 },
             },
             'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],

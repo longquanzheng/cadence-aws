@@ -1,0 +1,32 @@
+#Config for bench-test
+service:
+  env: "development"
+  deployment: "test"
+  role: "all"
+  domain: "chronos-bench"
+  serverHostPort: ${cadence_frontend_json}
+  httpListenPort: 9696
+
+worker:
+  numTaskLists: 2
+
+basic:
+  totalLaunchCount: 100
+  routineCount: 1
+  chainSequence: 4
+  concurrentCount: 1
+  payloadSizeBytes: 1024
+
+load:
+  testName: "chronos_marketplace_10"
+  workflowRPS: 100
+  numTaskLists: 2
+
+zap:
+  level: debug
+  outputPaths: ["stdout"]
+  errorOutputPaths: ["stdout"]
+
+statsd:
+  addr: ${statsd_ip_port}
+  prefix: cadence-bench
