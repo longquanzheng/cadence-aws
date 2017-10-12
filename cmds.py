@@ -24,7 +24,8 @@ def generate_cmd_map(application):
             }
         }
         install_service_cmd = '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
-
+    elif application == 'stress':
+        install_service_cmd = '\'bash -s\' < ./script/install_bench_test.sh'
 
     cmd_map = {
         'cc': {
@@ -77,12 +78,6 @@ def generate_cmd_map(application):
              'desc': 'Uninstall service '+application
           },
 
-        # remove image
-        'ri': {
-            'cmds': ['\'docker rmi -f ubercadence/longer-dev:0.3.1\''],
-            'desc': 'Remove cadence image service(for deploying new code)'
-           },
-
         'lg':{
             'cmds': [''],
             'desc': 'Login EC2 host'
@@ -92,7 +87,6 @@ def generate_cmd_map(application):
             'params':{
                 'local_port': {
                     'default': '8080',
-                    'choices': ['8080', '8081','7680','7681']
                 },
                 'remote_port':{
                     'default': '80',
