@@ -61,6 +61,10 @@ response = ec2.run_instances(
                     'Key': 'Name',
                     'Value': args.deployment_group+args.application
                 },
+                {
+                    'Key': 'TeamName',
+                    'Value': 'UberCadence'
+                },
             ]
         },
     ],
