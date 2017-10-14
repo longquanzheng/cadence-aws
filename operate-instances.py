@@ -74,13 +74,13 @@ def get_seeds():
     filters[0]['Values'] = [ args.deployment_group+'frontend' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
+    ip_ports = map(lambda ip: ip+":7933", ips)
 
     if len(ips)==0:
         raise Exception("at least one frontend host need to be created first!")
     if len(ips)>0:
-        cadence_seeds = reduce(lambda ip1,ip2: ip1+":7933,"+ip2+":7933", ips)
-
-    ip_ports = map(lambda ip: ip+":7933", ips)
+        cadence_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ip_ports)
+    
     cadence_frontend_json = json.dumps(ip_ports)
     cadence_frontend_json = cadence_frontend_json.replace('"','\\"')
     cadence_frontend_json = cadence_frontend_json.replace(' ','')
