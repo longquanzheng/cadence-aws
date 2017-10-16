@@ -11,7 +11,7 @@ worker:
   numTaskLists: 2
 
 basic:
-  totalLaunchCount: 100
+  totalLaunchCount: 1000
   routineCount: 1
   chainSequence: 4
   concurrentCount: 1
