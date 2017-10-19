@@ -5,13 +5,14 @@
     "alias" : "cassandra-${PRIVATE_IP_UNDER}",
     "queries" : [
       {
-      "obj" : "org.apache.cassandra.metrics:type=ClientRequest,scope=Read,name=Latency",
+      "obj" : "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=*",
       "attr" : [ "OneMinuteRate","Count","99thPercentile" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
         "port" : 8125,
-        "host" : "${STATSD_IP}",
-        "bucketType" : "c"
+        "host" : "10.4.114.110",
+        "bucketType" : "c",
+        "typeNames" : ["name","scope"]
       }
       ]
       }
