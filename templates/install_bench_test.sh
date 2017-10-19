@@ -9,7 +9,7 @@ mkdir -p /home/ec2-user/go/bin
 curl https://glide.sh/get | sh
 
 cd /home/ec2-user/go/src/github.com/uber
-git clone https://github.com/longquanzheng/cadence.git
+git clone https://github.com/uber/cadence.git
 
 cd cadence
 git checkout bench_aws
