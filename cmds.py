@@ -96,7 +96,7 @@ def generate_cmd_map(application):
                 # generate statsd.json based on template TODO there is a bug about bash export command...
                 '\"docker exec -i  cadence-cassandra /bin/bash -c \\\" export STATSD_IP={statsd_seed_ip} && export PRIVATE_IP_UNDER={private_ip_under} && envsubst < statsd_template.json > /usr/share/jmxtrans/statsd.json \\\" \"',
                 # run jmxtrans # NOTE intentionally add 2s delay on the end of bash cmds to let jmx get fully started
-                '\'docker exec -i  cadence-cassandra /bin/bash -c "cd /usr/share/jmxtrans/ && ./bin/jmxtrans.sh stop statsd.json && ./bin/jmxtrans.sh start statsd.json && sleep 2 && echo succ"\''
+                '\'docker exec -i  cadence-cassandra /bin/bash -c "cd /usr/share/jmxtrans/ && export LOG_LEVEL=info && ./bin/jmxtrans.sh stop statsd.json && ./bin/jmxtrans.sh start statsd.json && sleep 2 && echo succ"\''
             ],
             'desc':'Install jmxtrans (for Cassandra docker container)'
         },

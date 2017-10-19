@@ -8,7 +8,7 @@
       "obj" : "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=*",
       "attr" : [ "OneMinuteRate","Count","99thPercentile" ],
       "outputWriters" : [ {
-        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriterFactory",
         "port" : 8125,
         "host" : "10.4.114.110",
         "bucketType" : "c",
