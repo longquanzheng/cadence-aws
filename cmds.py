@@ -77,23 +77,17 @@ def generate_cmd_map(application):
         'jt':{
             'cmds' : [
                 #fix jmx setting and restart cassandra
-                '\'cat > cassandra-env.sh \' < ./templates/cassandra-env.sh ',
-                'docker cp cassandra-env.sh cadence-cassandra:/etc/cassandra/cassandra-env.sh',
+                '\'bash -s\' < ./templates/fix_cassandra.sh',
                 '\'docker restart cadence-cassandra \'',
 
-                # upload statsd.json
+                # install  jmxtrans
+                '\'bash -s\' < ./templates/install_jmxtrans.sh',
+
+                # upload statsd_template.json
                 '\'cat > statsd_template.json \' < ./templates/statsd_template.json ',
                 'docker cp statsd_template.json cadence-cassandra:statsd_template.json',
 
-                # install  jmxtrans
-                '\'docker exec -i  cadence-cassandra apt-get update\'',
-                '\'docker exec -i  cadence-cassandra apt-get install wget -y\'',
-                '\'docker exec -i  cadence-cassandra apt-get install openjdk-8-jdk -y\'',
-                '\'docker exec -i  cadence-cassandra apt-get install vim -y\'',
-                '\'docker exec -i  cadence-cassandra apt-get install gettext -y\'',
-                '\'docker exec -i  cadence-cassandra wget http://central.maven.org/maven2/org/jmxtrans/jmxtrans/267/jmxtrans-267.deb\'',
-                '\'docker exec -i  cadence-cassandra dpkg -i jmxtrans-267.deb\'',
-                # generate statsd.json based on template TODO there is a bug about bash export command...
+                # generate statsd.json based on the template
                 '\"docker exec -i  cadence-cassandra /bin/bash -c \\\" export STATSD_IP={statsd_seed_ip} && export PRIVATE_IP_UNDER={private_ip_under} && envsubst < statsd_template.json > /usr/share/jmxtrans/statsd.json \\\" \"',
                 # run jmxtrans # NOTE intentionally add 2s delay on the end of bash cmds to let jmx get fully started
                 '\'docker exec -i  cadence-cassandra /bin/bash -c "cd /usr/share/jmxtrans/ && export LOG_LEVEL=info && ./bin/jmxtrans.sh stop statsd.json && ./bin/jmxtrans.sh start statsd.json && sleep 2 && echo succ"\''
