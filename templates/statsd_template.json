@@ -12,10 +12,24 @@
         "port" : 8125,
         "host" : "10.4.114.110",
         "bucketType" : "c",
-        "typeNames" : ["keyspace","type","name"]
+        "typeNames" : ["keyspace","name"],
+        "rootPrefix" : "Keyspace"
       }
       ]
-      }
+    },
+    {
+    "obj" : "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=*",
+    "attr" : [ "OneMinuteRate","Count","999thPercentile","99thPercentile","98thPercentile","95thPercentile","75thPercentile","Min","Max","Mean" ],
+    "outputWriters" : [ {
+      "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriterFactory",
+      "port" : 8125,
+      "host" : "10.4.114.110",
+      "bucketType" : "c",
+      "typeNames" : ["scope","name"],
+      "rootPrefix" : "ClientRequest"
+    }
+    ]
+    }
 
    ]
   } ]
