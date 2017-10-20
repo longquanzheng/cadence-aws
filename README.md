@@ -150,6 +150,19 @@ Choose instances (0-2) to operate on
 >>>0-2
 ```
 
+### Tips of operation:
+#### [ fw ] Forward command
+Possible choices of remote ports:
+* 80 for grafana,
+* 81 for graphite,
+* 7199 for cassandra JMX,
+* 9696 for bench test controller,
+* 7933 for cadence frontend
+
+#### [ cc ]  Customized command
+* Look at docker caintainer log: **docker logs cadence-frontend --follow**    
+* Log into docker container: **docker exec -it cadence-frontend /bin/bash** 
+
 ## Step two: config/install Statsd-Graphite-Grafana application
 ```bash
 python operate-instances.py -a statsd

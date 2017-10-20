@@ -111,10 +111,11 @@ def generate_cmd_map(application):
                 },
                 'remote_port':{
                     'default': '80',
+                    'choices': ['80','81','9696','7199','7933']
                 },
             },
             'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],
-            'desc': 'Forword a remote port(like 80[grafana] and 81([graphite]) to a local port(like 8080/8081)'
+            'desc': 'Forword a remote port(port on a remote host) to a local port(port on your laptop).'
         },
 
         'tm':{

@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--num", type=int, default=1, help='number of instances that will be created')
 parser.add_argument("--instance-type", default='t2.medium')
-parser.add_argument("--disk-size", type=int, default=30, help="disk size in GiB")
+parser.add_argument("--disk-size", type=int, default=30, help="disk size in GiB. Ensure to use at least 100 for Cassandra/statsd applications")
 parser.add_argument("--ec2-image", default='ami-4fffc834', help="ec2 image to install on instance")
 parser.add_argument("--key-name", required=True, help="AWS keypair for EC2 instance(make sure you have the private key(pem file))")
 parser.add_argument("--subnet-id", required=True, help="AWS subnet-id")
@@ -24,9 +24,9 @@ response = ec2.run_instances(
             'DeviceName': '/dev/xvda',
             'Ebs': {
                 'DeleteOnTermination': True,
-                # Use default of gp2 is 100/3000
-                #'Iops': 100,
-                # need bigger for Cassandra
+                # See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+                # Use default of gp2 is 100/300 when disk is less then 100GB
+                # need bigger for Cassandra/statsd(100GB at least) so that we have higher disk iops
                 'VolumeSize': args.disk_size,
                 'VolumeType': 'gp2'
             }
