@@ -11,7 +11,7 @@
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriterFactory",
         "port" : 8125,
-        "host" : "10.4.114.110",
+        "host" : "${STATSD_IP}",
         "bucketType" : "c",
         "typeNames" : ["keyspace","name"],
         "rootPrefix" : "Cassandra.Keyspace"
@@ -25,7 +25,7 @@
     "outputWriters" : [ {
       "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriterFactory",
       "port" : 8125,
-      "host" : "10.4.114.110",
+      "host" : "${STATSD_IP}",
       "bucketType" : "c",
       "typeNames" : ["scope","name"],
       "rootPrefix" : "Cassandra.ClientRequest"
