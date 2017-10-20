@@ -162,27 +162,31 @@ if ins_cnt<=0:
 
 cmd_map = cmds.generate_cmd_map(args.application)
 # Interactive operations
-print "Choose operation:"
-for idx in cmd_map:
-    print "[ "+str(idx)+" ]:  "+cmd_map[idx]['desc']
-sys.stdout.write(">>>")
-op = str(raw_input())
-if op not in cmd_map:
-    print "Done without operation."
-else:
-    #need to input extra params
+while True:
+    print "Choose operation:"
+    for idx in cmd_map:
+        print "[ "+str(idx)+" ]:  "+cmd_map[idx]['desc']
+    sys.stdout.write(">>>")
+    op = str(raw_input())
+    if op in ['x','exit','q','quit','done']:
+        break
+    if op not in cmd_map:
+        print "Not a valid operation."
+        continue
+
+    # input extra params
     params = {}
     if 'params' in cmd_map[op]:
         for p in cmd_map[op]['params']:
             if 'default' in cmd_map[op]['params'][p]:
                 default = str(cmd_map[op]['params'][p]['default'])
-                default_desc = "["+default+"]"
+                default_desc = "[default: "+default+"]"
             else:
                 default = default_desc = ''
 
             if 'choices' in cmd_map[op]['params'][p]:
                 choices = map(str, cmd_map[op]['params'][p]['choices'])
-                choices_desc = "("+",".join(choices)+")"
+                choices_desc = "(choices: "+",".join(choices)+")"
             else:
                 choices = []
                 choices_desc = ''
@@ -199,6 +203,7 @@ else:
                     print "{param_name} must be one of: {choices}".format(param_name=p, choices=str(choices_desc))
                     continue
                 else:
+                    #succ input params
                     break
 
     # choose instance to operate on, if only one, then don't aks for it
@@ -229,3 +234,5 @@ else:
         else:
             cmd_tmpls = cmd_map[op]['cmds']
             run_cmd(instances, instance_idxs, cmd_tmpls, params )
+            print '---------------------------------------'
+            print '>>>>>>>>>Done operation:'+op+"<<<<<<<<<<<"
