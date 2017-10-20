@@ -180,7 +180,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "averageSeries(movingAverage(stats.counters.Cassandra.ClientRequest.$host.org_apache_cassandra_metrics_CassandraMetricsRegistryJmxTimer.Read.Latency.$Percentile.count, '2min'), *)",
+              "target": "averageSeries(movingAverage(stats.counters.Cassandra.Keyspace.$host.org_apache_cassandra_metrics_CassandraMetricsRegistryJmxTimer.$keyspace.ReadLatency.$Percentile.count, '2min'), *)",
               "textEditor": false
             }
           ],
@@ -328,7 +328,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "averageSeries(movingAverage(stats.counters.Cassandra.ClientRequest.$host.org_apache_cassandra_metrics_CassandraMetricsRegistryJmxTimer.Write.Latency.$Percentile.count, '2min'), *)",
+              "target": "averageSeries(movingAverage(stats.counters.Cassandra.Keyspace.cassandra-10_4_113_251.org_apache_cassandra_metrics_CassandraMetricsRegistryJmxTimer.$keyspace.WriteLatency.$Percentile.count, '5min'), *)",
               "textEditor": false
             }
           ],
@@ -886,6 +886,7 @@
         "allValue": null,
         "current": {
           "selected": true,
+          "tags": [],
           "text": "99thPercentile",
           "value": "99thPercentile"
         },
@@ -991,6 +992,6 @@
     ]
   },
   "timezone": "",
-  "title": "Cassandra-ClientRequests",
-  "version": 2
+  "title": "Cassandra",
+  "version": 7
 }
