@@ -195,7 +195,7 @@ python operate-instances.py -a stress
 3. Start your stress test running by visit http://localhost:9696/start?test=basic
 4. Go to Graphite to make sure that test is emitting metrics(In Tree: Metrics->stats->counters->cadence-bench)
 
-## Step five: import metric dashboards
+## Step six: import metric dashboards
 Go to grafana(http://localhost:8080), and import the grafana dashboard template from json files:
 Cadence overall:
 https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cadence-Overall.json
@@ -207,6 +207,8 @@ Cassandra dashboard:
 https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra-useKeySpaceForLatency.json
 or
 https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra.json  (there is a bug for Cassandra here for using ClientRequest table for write latency)
+
+![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/cassandra-dashboard.png)
 
 ## And then...
 You are all DONE for your Cadence cluster!
