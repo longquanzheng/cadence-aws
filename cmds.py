@@ -25,7 +25,11 @@ def generate_cmd_map(application):
                 'choices': ['0.3.2','master']
             }
         }
-        install_service_cmd = ['\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\'']
+        install_service_cmd = [
+            # remove docker image of tag master to pick up latest commit on master branch
+            '\'docker rmi -f ubercadence/server:master\'',
+            '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
+            ]
     elif application == 'stress':
         install_service_cmd = [
             #install golang/glide and checkout code
@@ -58,12 +62,6 @@ def generate_cmd_map(application):
             'cmds': ['\'bash -s\' < ./templates/install_docker.sh'],
             'desc': 'Install docker'
            },
-
-       # remove docker image of tag master to pick up latest commit on master branch
-       'ri': {
-           'cmds': ['\'docker rmi -f ubercadence/server:master\''],
-           'desc': 'Remove docker image of tag master'
-          },
 
         # install service
         'sv':{
