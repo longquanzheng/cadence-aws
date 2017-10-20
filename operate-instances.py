@@ -44,7 +44,7 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
 def parse_ips_from_ec2_response(response):
     ips = []
     #Reservations->Instances->PrivateIpAddress
-    map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']) if 'PrivateIpAddress' in i else ips, r['Instances'] ), response['Reservations'])
+    map(lambda r: map(lambda i: ips.append(i['PrivateIpAddress']) if 'PrivateIpAddress' in i and i['State']['Name']=='running' else ips, r['Instances'] ), response['Reservations'])
     return ips
 
 def get_seeds():
@@ -80,7 +80,7 @@ def get_seeds():
         raise Exception("at least one frontend host need to be created first!")
     if len(ips)>0:
         cadence_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ip_ports)
-    
+
     cadence_frontend_json = json.dumps(ip_ports)
     cadence_frontend_json = cadence_frontend_json.replace('"','\\"')
     cadence_frontend_json = cadence_frontend_json.replace(' ','')
