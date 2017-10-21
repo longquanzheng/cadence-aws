@@ -161,7 +161,7 @@ Possible choices of remote ports:
 
 #### [ cc ]  Customized command
 * Look at docker caintainer log: **docker logs cadence-frontend --follow**    
-* Log into docker container: **docker exec -it cadence-frontend /bin/bash** 
+* Log into docker container: **docker exec -it cadence-frontend /bin/bash**
 
 ## Step two: config/install Statsd-Graphite-Grafana application
 ```bash
@@ -219,8 +219,10 @@ https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Templ
 Cassandra dashboard:
 https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra-useKeySpaceForLatency.json
 or
-https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra.json  (there is a bug for Cassandra here for using ClientRequest table for write latency)
+https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra-useClientRequestForLatency.json  (there is a bug for Cassandra here for using ClientRequest table for write latency)
 
+![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/overall-dashboard.png)
+![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/history-dashboard.png)
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/cassandra-dashboard.png)
 
 ## And then...
