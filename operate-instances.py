@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
-parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}-'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
+parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
 args = parser.parse_args()
 
 
@@ -52,14 +52,14 @@ def get_seeds():
     # Get seeds for cassandra/statsd/cadence
     cassandra_seeds, statsd_seeds, statsd_seed_ip, cadence_seeds, cadence_frontend_json = '', '', '', '', ''
 
-    filters[0]['Values'] = [ args.deployment_group+'cassandra' ]
+    filters[0]['Values'] = [ args.deployment_group+'-cassandra' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
     cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
     if len(ips)==0:
         raise Exception("at least one Cassandra host need to be created first!")
 
-    filters[0]['Values'] = [ args.deployment_group+'statsd' ]
+    filters[0]['Values'] = [ args.deployment_group+'-statsd' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
     if len(ips)==0:
@@ -71,7 +71,7 @@ def get_seeds():
         statsd_seeds = ips[0]+":8125"
         statsd_seed_ip = ips[0]
 
-    filters[0]['Values'] = [ args.deployment_group+'frontend' ]
+    filters[0]['Values'] = [ args.deployment_group+'-frontend' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
     ip_ports = map(lambda ip: ip+":7933", ips)
@@ -149,7 +149,7 @@ def parse_ec2_response(response):
 ##############################################
 ######### main function begins here ##########
 ##############################################
-filters[0]['Values'] = [ args.deployment_group+args.application ]
+filters[0]['Values'] = [ args.deployment_group+"-"+args.application ]
 response = ec2.describe_instances(
     Filters=filters
 )

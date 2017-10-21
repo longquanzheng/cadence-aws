@@ -10,7 +10,7 @@ parser.add_argument("--ec2-image", default='ami-4fffc834', help="ec2 image to in
 parser.add_argument("--key-name", required=True, help="AWS keypair for EC2 instance(make sure you have the private key(pem file))")
 parser.add_argument("--subnet-id", required=True, help="AWS subnet-id")
 parser.add_argument("--security-group-id", required=True, help="AWS security-group-id")
-parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}-'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
+parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
 
 args = parser.parse_args()
 
@@ -59,7 +59,7 @@ response = ec2.run_instances(
             'Tags': [
                 {
                     'Key': 'Name',
-                    'Value': args.deployment_group+args.application
+                    'Value': args.deployment_group+"-"+args.application
                 },
                 {
                     'Key': 'TeamName',
