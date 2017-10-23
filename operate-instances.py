@@ -96,7 +96,7 @@ def terminate_instances(instances, instance_idxs):
     instance_ids = []
     for idx in instance_idxs:
         if idx not in instances:
-            print " #"+str(idx)+" instance doesn't exist, skip..."
+            #print " #"+str(idx)+" instance doesn't exist, skip..."
             continue
         if instances[idx]['State'] != 'running':
             print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."

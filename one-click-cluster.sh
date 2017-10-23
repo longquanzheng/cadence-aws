@@ -15,7 +15,7 @@ python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 
 python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 -d $4 -a stress
 
 echo "waiting for instances to be ready..."
-sleep 60
+sleep 150
 
 echo "-----Start configuring cadence clusters-----"
 echo "1. config/install Statsd-Graphite-Grafana application:"
