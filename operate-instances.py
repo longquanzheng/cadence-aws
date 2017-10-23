@@ -1,4 +1,4 @@
-import boto3,argparse,json,pprint,subprocess,sys,os,getpass
+import boto3,argparse,json,pprint,subprocess,sys,os,getpass,string
 import cmds
 
 pp = pprint.PrettyPrinter()
@@ -9,6 +9,9 @@ parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'hi
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
 parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")
+parser.add_argument("--operation", "-op", required=False, type=str, help='operation type to be executed')
+parser.add_argument("--operation-params", required=False, help='operation params in key-values: k1:v1,k2:v2,k3:v3')
+parser.add_argument("--target-instances", required=False, help='target instances to be operated: 0-N or 0,1,2,3')
 args = parser.parse_args()
 
 
@@ -20,17 +23,18 @@ def run_cmd(instances, instance_idxs, cmd_tmpls, params):
 
     for idx in instance_idxs:
         if idx not in instances:
-            print " #"+str(idx)+" instance doesn't exist, skip..."
+            #print " #"+str(idx)+", skip..."
             continue
         if instances[idx]['State'] != 'running':
             print " #"+str(idx)+" instance("+instances[idx]['InstanceId']+") is not running, skip..."
             continue
 
+        print "Now operate on #"+str(idx)+" ..."
         #TODO there is a bug about bash export command ...
         private_ip_under = instances[idx]['private_ip'].replace('.','_')
 
         for cmd_tmpl in cmd_tmpls:
-            cmd = "ssh -i {ec2_pem_path} ec2-user@".format(ec2_pem_path=args.pem)\
+            cmd = "ssh -o StrictHostKeyChecking=no -i {ec2_pem_path} ec2-user@".format(ec2_pem_path=args.pem)\
                     + instances[idx]['public_ip'] + " "\
                     +cmd_tmpl.format(\
                 public_ip=instances[idx]['public_ip'], private_ip=instances[idx]['private_ip'],private_ip_under=private_ip_under, cassandra_seeds=cassandra_seeds,
@@ -146,6 +150,32 @@ def parse_ec2_response(response):
     return ins_cnt, instances
 
 
+def parse_target_instance(target_str):
+    instance_idxs = []
+    if '-' in target_str:
+        ar = target_str.split('-')
+        for n in range(int(ar[0]), int(ar[1])+1 ):
+            instance_idxs.append(n)
+    elif ',' in target_str:
+        for n in target_str.split(','):
+            instance_idxs.append(int(n))
+    else:
+        instance_idxs.append(int(target_str))
+    return instance_idxs
+
+def execute_operation(op, params, instances, instance_idxs, cmd_map ):
+    #run command on instances
+    if len(instance_idxs)==0:
+        print "No instance to operate on. Done."
+    else:
+        if op=='tm': # for terminating EC2 instances
+            terminate_instances(instances, instance_idxs)
+        else:
+            cmd_tmpls = cmd_map[op]['cmds']
+            run_cmd(instances, instance_idxs, cmd_tmpls, params )
+            print '---------------------------------------'
+            print '>>>>>>>>>Done operation:'+op+"<<<<<<<<<<<"
+
 ##############################################
 ######### main function begins here ##########
 ##############################################
@@ -161,6 +191,18 @@ if ins_cnt<=0:
     sys.exit(0)
 
 cmd_map = cmds.generate_cmd_map(args.application)
+if args.operation is not None:
+    instance_idxs = parse_target_instance(args.target_instances)
+    params = {}
+    for kv in args.operation_params.split(","):
+        if ':' not in kv:
+            continue
+        pair = kv.split(":")
+        params[pair[0]]=pair[1]
+    print "execution {op} with params: {param_str}".format(op=args.operation, param_str=str(params))
+    execute_operation(args.operation, params, instances, instance_idxs, cmd_map)
+    sys.exit(0)
+
 # Interactive operations
 while True:
     print "Choose operation:"
@@ -215,24 +257,5 @@ while True:
         print_instances(instances)
         sys.stdout.write(">>>")
         target_str = str(raw_input())
-        if '-' in target_str:
-            ar = target_str.split('-')
-            for n in range(int(ar[0]), int(ar[1])+1 ):
-                instance_idxs.append(n)
-        elif ',' in target_str:
-            for n in target_str.split(','):
-                instance_idxs.append(int(n))
-        else:
-            instance_idxs.append(int(target_str))
-
-    #run command on instances
-    if len(instance_idxs)==0:
-        print "No instance to operate on. Done."
-    else:
-        if op=='tm': # for terminating EC2 instances
-            terminate_instances(instances, instance_idxs)
-        else:
-            cmd_tmpls = cmd_map[op]['cmds']
-            run_cmd(instances, instance_idxs, cmd_tmpls, params )
-            print '---------------------------------------'
-            print '>>>>>>>>>Done operation:'+op+"<<<<<<<<<<<"
+        instance_idxs = parse_target_instance(target_str)
+    execute_operation(op, params, instances, instance_idxs, cmd_map)

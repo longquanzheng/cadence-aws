@@ -1,22 +1,10 @@
-# cadence-aws
+# What? cadence-aws
 Create/manage Cadence service on AWS
 See https://github.com/uber/cadence
 
-
-# How?
-
-## Prerequisite
-* Python 2.7 (not tested in other versions)
-* Boto3 for python: https://github.com/boto/boto3
-* Install AWSCLI if you don't have it: http://docs.aws.amazon.com/cli/latest/userguide/awscli-install-bundle.html
-* Set default AWS credential and region. Run "aws configure" to set them. See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
-* Prepare a private key for access EC2 instances. Usually it is from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
-* Prepare at least one subnet(please save the subnet id) for creating EC2 instances. Make sure your subnet doesn't have special rules to block traffic.
-* Prepare a security group(please save the security group id) for creating EC2 Instaces. Make sure the security group allow ssh from outside and any TCP traffic inside.
-
-
-## Docs & Example of create-instances.py
-Better to spend some time to understand this script for Step one
+Two major scripts:
+## create-instances.py
+Request EC2 instances
 ```bash
 $ python create-instances.py --help
 usage: create-instances.py [-h] --application
@@ -58,34 +46,8 @@ i-xxxxxxxxxxxxxxxx
 
 ```
 
-## Step one: create initial ec2 instances
-1. Create at least one instance for cassandra/frontend/matching/history applications respectively
-```bash
-$ python create-instances.py -a cassandra --num 3 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-```bash
-$ python create-instances.py -a frontend --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-```bash
-$ python create-instances.py -a matching --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-```bash
-$ python create-instances.py -a history --num 4 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-
-2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
-```bash
-$ python create-instances.py -a statsd --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-
-3. Create one instance for stress application. You can create more if needed.
-```bash
-$ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
-```
-
-## Docs & Example of operate-instances.py
-The rest of the instructions are all executed by operate-instances.py
-It's better to understand the script before going to Step 2 and the rests.
+## operate-instances.py
+Config/install services/applicaitons on EC2 instances
 
 ```bash
 $ python operate-instances.py --help
@@ -105,6 +67,7 @@ optional arguments:
                         This is implemented as a name prefix of EC2 tag
 
 ```
+
 ```bash
 python operate-instances.py -a frontend
 ---------------------
@@ -131,6 +94,7 @@ Choose operation:
 [ us ]:  Uninstall service frontend
 >>> dk
 ```
+
 After typing "dk" and "ENTER", it prompts to ask you choosing instances to operate on. You can type "*0-N*" to operate on multiple instances at a time:
 ```
 Choose instances (0-2) to operate on
@@ -163,7 +127,53 @@ Possible choices of remote ports:
 * Look at docker caintainer log: **docker logs cadence-frontend --follow**    
 * Log into docker container: **docker exec -it cadence-frontend /bin/bash**
 
-## Step two: config/install Statsd-Graphite-Grafana application
+
+# How?
+
+## Prerequisite
+* Python 2.7 (not tested in other versions)
+* Boto3 for python: https://github.com/boto/boto3
+* Install AWSCLI if you don't have it: http://docs.aws.amazon.com/cli/latest/userguide/awscli-install-bundle.html
+* Set default AWS credential and region. Run "aws configure" to set them. See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+* Prepare a private key for access EC2 instances. Usually it is from AWS EC2 keypair: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html . Save it to ~/ec2.pem (otherwise need to specify location in operate-instances.py)
+* Prepare at least one subnet(please save the subnet id) for creating EC2 instances. Make sure your subnet doesn't have special rules to block traffic.
+* Prepare a security group(please save the security group id) for creating EC2 Instaces. Make sure the security group allow ssh from outside and any TCP traffic inside.
+
+## Easy mode: one-click template
+This single command will create a cadence cluster for you. With 3-node cassandra,1-node statsd/graphite/grafana, 2-node Cadence history, 1-node Cadence matching, 1-node Cadence frontend and 1-node of Cadence stress test. The command will take about 10~15 mins to finish.
+
+```
+bash one-click-cluster.sh keypair-name subnet-id security-group-id deployment-group keypair-pem-location
+```
+
+## Customized mode: use create-instances.py and operate-instances.py
+### Step one: create initial ec2 instances
+1. Create at least one instance for cassandra/frontend/matching/history applications respectively
+```bash
+$ python create-instances.py -a cassandra --num 3 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a frontend --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a matching --num 2 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+```bash
+$ python create-instances.py -a history --num 4 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+
+2. Create EXACTLY one instance for statsd application, since we don't support distributed mode yet.
+```bash
+$ python create-instances.py -a statsd --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+
+3. Create one instance for stress application. You can create more if needed.
+```bash
+$ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-id subnet-xxxxxxxx --security-group-id sg-xxxxxxxx
+```
+
+
+### Step two: config/install Statsd-Graphite-Grafana application
 ```bash
 python operate-instances.py -a statsd
 ```
@@ -173,7 +183,7 @@ python operate-instances.py -a statsd
 4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
 5. Open http://localhost:8080 for Grafana, username and password are both "admin".
 
-## Step three: config/install Cassandra application
+### Step three: config/install Cassandra application
 ```bash
 python operate-instances.py -a cassandra
 ```
@@ -185,7 +195,7 @@ python operate-instances.py -a cassandra
 3. Install jmxtrans >>>jt
 4. Go to Graphite to make sure that every Cassandra node is emitting metrics(In Tree: Metrics->stats->counters->servers->cassandra-10-...)
 
-## Step four: config/install Cadence frontend/matching/history application
+### Step four: config/install Cadence frontend/matching/history application
 ```bash
 python operate-instances.py -a frontend
 ```
@@ -199,7 +209,7 @@ python operate-instances.py -a history
 2. Install frontend/matching/history service >>>sv
 3. Go to Graphite to make sure that Cadence service is emitting metrics(In Tree: Metrics->stats->counters->cadence)
 
-## Step five: config/install Cadence stress(bench) test application
+### Step five: config/install Cadence stress(bench) test application
 ```bash
 python operate-instances.py -a stress
 ```
@@ -208,7 +218,11 @@ python operate-instances.py -a stress
 3. Start your stress test running by visit http://localhost:9696/start?test=basic
 4. Go to Graphite to make sure that test is emitting metrics(In Tree: Metrics->stats->counters->cadence-bench)
 
-## Step six: import metric dashboards
+## And then...
+You are all DONE for your Cadence cluster!
+You can also run some sample test. Check out here: https://github.com/samarabbas/cadence-samples
+
+### import metric dashboards to grafana
 Go to grafana(http://localhost:8080), and import the grafana dashboard template from json files:
 Cadence overall:
 https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cadence-Overall.json
@@ -224,10 +238,3 @@ https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Templ
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/overall-dashboard.png)
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/history-dashboard.png)
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/cassandra-dashboard.png)
-
-## And then...
-You are all DONE for your Cadence cluster!
-
-It's now time to explore it using some other command like login( >>>lg ) to see what is inside.
-
-And also you can run some sample test. Check out here: https://github.com/samarabbas/cadence-samples
