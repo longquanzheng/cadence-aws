@@ -12,7 +12,7 @@ def generate_cmd_map(application):
     elif application in ['frontend', 'matching', 'history']:
         params={
             'log_level': {
-                'default': 'debug',
+                'default': 'info',
                 'choices': [ 'debug', 'info']
                 },
             'num_history_shards': {

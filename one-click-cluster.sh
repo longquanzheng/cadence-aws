@@ -32,15 +32,15 @@ python operate-instances.py -a cassandra -d cadence-shared --pem $5 -d $4 -op jt
 
 echo "3. config/install Cadence frontend application"
 python operate-instances.py -a frontend -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a frontend -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:debug,version:master --target-instances 0-100
+python operate-instances.py -a frontend -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "4. config/install Cadence history application"
 python operate-instances.py -a history -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a history -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:debug,version:master --target-instances 0-100
+python operate-instances.py -a history -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "5. config/install Cadence matching application"
 python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:debug,version:master --target-instances 0-100
+python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "6. config/install Cadence stress(bench) test application"
 python operate-instances.py -a stress -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
