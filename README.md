@@ -124,7 +124,7 @@ Possible choices of remote ports:
 * 7933 for cadence frontend
 
 #### [ cc ]  Customized command
-* Look at docker caintainer log: **docker logs cadence-frontend --follow**    
+* Look at docker caintainer log: **docker logs cadence-frontend --follow**
 * Log into docker container: **docker exec -it cadence-frontend /bin/bash**
 
 
@@ -177,7 +177,7 @@ $ python create-instances.py -a stress --num 1 --key-name cadence-KEY --subnet-i
 ```bash
 python operate-instances.py -a statsd
 ```
-1. Install docker >>>dk  
+1. Install docker >>>dk
 2. Install statsd service >>>sv
 3. Forward remote 80(Grafana) and 81(Graphite) ports to your local ports(use 8080/8081 as non-privileged ports) >>>fw
 4. Open http://localhost:8081 for Graphite. There should be statsd metrics.
@@ -218,22 +218,23 @@ python operate-instances.py -a stress
 3. Start your stress test running by visit http://localhost:9696/start?test=basic
 4. Go to Graphite to make sure that test is emitting metrics(In Tree: Metrics->stats->counters->cadence-bench)
 
+### Step six: config/install Cadence stress(bench) test worker application
+```bash
+python operate-instances.py -a worker
+```
+1. Install service >>> sv
+2. Go to Graphite to make sure that test is emitting metrics(In Tree: Metrics->stats->counters->cadence-bench)
+
 ## And then...
 You are all DONE for your Cadence cluster!
 You can also run some sample test. Check out here: https://github.com/samarabbas/cadence-samples
 
 ### import metric dashboards to grafana
-Go to grafana(http://localhost:8080), and import the grafana dashboard template from json files:
+Go to grafana(http://localhost:8080), and import the grafana dashboard template from json files in `./grafana` directory:
 Cadence overall:
-https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cadence-Overall.json
+https://github.com/longquanzheng/cadence-aws/blob/master/grafana/Cadence-Overall.json
 
-Cadence history cluster:
-https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cadence-History.json
-
-Cassandra dashboard:
-https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra-useKeySpaceForLatency.json
-or
-https://github.com/longquanzheng/cadence-aws/blob/master/templates/Grafana-Template-Cassandra-useClientRequestForLatency.json  (there is a bug for Cassandra here for using ClientRequest table for write latency)
+(For Cassandra dashboard, there is a bug using ClientRequest table for write latency)
 
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/overall-dashboard.png)
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/history-dashboard.png)
