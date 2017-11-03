@@ -2,7 +2,7 @@
 service:
   env: "development"
   deployment: "test"
-  role: "controller"
+  role: "worker"
   domain: "chronos-bench"
   serverHostPort: ${cadence_frontend_json}
   httpListenPort: 9696

@@ -2,7 +2,7 @@ import boto3,argparse,json,getpass
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
+parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'worker', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--num", type=int, default=1, help='number of instances that will be created')
 parser.add_argument("--instance-type", default='t2.medium')
 parser.add_argument("--disk-size", type=int, default=30, help="disk size in GiB. Ensure to use at least 100 for Cassandra/statsd applications")

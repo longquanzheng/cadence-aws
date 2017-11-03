@@ -1,0 +1,14 @@
+*.out
+*.test
+*.xml
+*.swp
+.idea/
+.vscode/
+*.iml
+*.cov
+*.html
+.tmp/
+.gen/
+*.pyc
+/vendor
+.DS_Store
