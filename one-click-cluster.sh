@@ -13,6 +13,7 @@ python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 
 python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 -d $4 -a frontend
 python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 -d $4 -a matching
 python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 -d $4 -a stress
+python create-instances.py  --key-name $1 --subnet-id $2 --security-group-id $3 -d $4 -a worker
 
 echo "waiting for instances to be ready..."
 sleep 150
@@ -44,3 +45,7 @@ python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op sv 
 echo "6. config/install Cadence stress(bench) test application"
 python operate-instances.py -a stress -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
 python operate-instances.py -a stress -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:9696,remote_port:9696 --target-instances 0-100
+
+echo "7. config/install Cadence bench worker application"
+python operate-instances.py -a worker -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
+python operate-instances.py -a worker -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:9696,remote_port:9696 --target-instances 0-100

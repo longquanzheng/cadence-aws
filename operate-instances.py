@@ -5,7 +5,7 @@ pp = pprint.PrettyPrinter()
 #pp.pprint(response)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'statsd'], required=True, help='application type that will be created')
+parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'worker', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
 parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}'.format(username=getpass.getuser()), help="Use the same group for the EC2 instances you created. This is implemented as a name prefix of EC2 tag")

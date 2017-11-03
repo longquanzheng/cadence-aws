@@ -1,0 +1,1469 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_LOCAL_GRAPHITE",
+      "label": "Local Graphite",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "graphite",
+      "pluginName": "Graphite"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "4.4.3"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "graphite",
+      "name": "Graphite",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "hideControls": false,
+  "id": null,
+  "links": [],
+  "refresh": false,
+  "rows": [
+    {
+      "collapse": false,
+      "height": 250,
+      "panels": [
+        {
+          "content": "",
+          "height": "0",
+          "id": 1,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "title": "SHARDMGR & TASKMGR",
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 2,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CreateShard.shard.NONE.count, 0), 1), 'createshard.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetShard.shard.NONE.count, 0), 1), 'getshard.requests')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.UpdateShard.shard.NONE.count, 0), 1), 'updateshard.requests')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Shard CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 3,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateShard.shard.NONE.median, 0), '1minute', 'avg'), 'createshard median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateShard.shard.NONE.upper_99, 0), '1minute', 'avg'), 'createshard p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetShard.shard.NONE.median, 0), '1minute', 'avg'), 'getshard median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetShard.shard.NONE.upper_99, 0), '1minute', 'avg'), 'getshard p99')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateShard.shard.NONE.median, 0), '1minute', 'avg'), 'updateshard median')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateShard.shard.NONE.upper_99, 0), '1minute', 'avg'), 'updateshard p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Shard CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 4,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CreateTask.shard.NONE.count, 0), 1), 'createtasks.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetTasks.shard.NONE.count, 0), 1), 'gettasks.requests')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CompleteTask.shard.NONE.count, 0), 1), 'completetasks.requests')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.CreateTask.shard.NONE.count, 0), 1), 'createtasks.errors')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.GetTasks.shard.NONE.count, 0), 1), 'gettasks.errors')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Task CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 5,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateTask.shard.NONE.median, 0), '1minute', 'avg', false), 'createTask median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateTask.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'createTask p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetTasks.shard.NONE.median, 0), '1minute', 'avg', false), 'getTask median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetTasks.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'getTask p99')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTask.shard.NONE.median, 0), '1minute', 'avg', false), 'complete median')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTask.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'complete p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Task CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 6,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.UpdateTaskList.shard.NONE.count, 0), 1), 'updateTaskList.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.LeaseTaskList.shard.NONE.count, 0), 1), 'leaseTaskList.requests')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "TaskList CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 7,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateTaskList.shard.NONE.median, 0), '1minute', 'avg', false), 'updateTaskList median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateTaskList.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'updateTaskList p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.LeaseTaskList.shard.NONE.median, 0), '1minute', 'avg', false), 'leaseTaskList median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.LeaseTaskList.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'leaseTaskList p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "TaskList CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 349,
+      "panels": [
+        {
+          "content": "",
+          "height": "0",
+          "id": 8,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "title": "EXECUTION MANAGER",
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "height": "300",
+          "id": 9,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CreateWorkflowExecution.shard.ALL.count, 0), 1), 'createworkflowexecution persistence.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.CreateWorkflowExecution.shard.ALL.count, 0), 1), 'createworkflowexecution persistence.errors')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetWorkflowExecution.shard.ALL.count, 0), 1), 'getworkflowexecution persistence.requests')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.GetWorkflowExecution.shard.ALL.count, 0), 1), 'getworkflowexecution persistence.errors')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.UpdateWorkflowExecution.shard.ALL.count, 0), 1), 'updateworkflowexecution persistence.requests')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.UpdateWorkflowExecution.shard.ALL.count, 0), 1), 'updateworkflowexecution persistence.errors')"
+            },
+            {
+              "refId": "G",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.DeleteWorkflowExecution.shard.ALL.count, 0), 1), 'deleteworkflowexecution persistence.requests')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "WorkflowExecution CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 10,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateWorkflowExecution.shard.ALL.median, 0), '1minute', 'avg', false), 'createworkflowexecution median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateWorkflowExecution.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'createworkflowexecution p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetWorkflowExecution.shard.ALL.median, 0), '1minute', 'avg', false), 'getworkflowexecution median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetWorkflowExecution.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'getworkflowexecution p99')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateWorkflowExecution.shard.ALL.median, 0), '1minute', 'avg', false), 'updateworkflowexecution median')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.UpdateWorkflowExecution.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'updateworkflowexecution p99')"
+            },
+            {
+              "refId": "G",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.DeleteWorkflowExecution.shard.ALL.median, 0), '1minute', 'avg', false), 'deleteworkflowexecution median')"
+            },
+            {
+              "refId": "H",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.DeleteWorkflowExecution.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'deleteworkflowexecution p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "WorkflowExecution CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 11,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetTransferTasks.shard.ALL.count, 0), 1), 'gettransfertasks persistence.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CompleteTransferTask.shard.ALL.count, 0), 1), 'completetransfertasks persistence.requests')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetTimerIndexTasks.shard.ALL.count, 0), 1), 'gettimerindextasks persistence.requests')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CompleteTimerTask.shard.ALL.count, 0), 1), 'completetimertasks persistence.requests')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.CompleteTimerTask.shard.ALL.count, 0), 1), 'completetimertasks persistence.errors')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Task CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 12,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetTransferTasks.shard.ALL.median, 0), '1minute', 'avg', false), 'gettransfertasks median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetTransferTasks.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'gettransfertasks p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTransferTask.shard.ALL.median, 0), '1minute', 'avg', false), 'completetransfertask median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTransferTask.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'completetransfertask p99')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTimerTask.shard.ALL.median, 0), '1minute', 'avg', false), 'completetimertask median')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CompleteTimerTask.shard.ALL.upper_99, 0), '1minute', 'avg', false), 'completetimertask p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "WorkflowExecution Tasks CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "panels": [
+        {
+          "content": "",
+          "height": "0",
+          "id": 13,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "title": "HISTORY MANAGER",
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 14,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.AppendHistoryEvents.shard.NONE.count, 0), 1), 'appendhistoryevents persistence.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.AppendHistoryEvents.shard.NONE.count, 0), 1), 'appendhistoryevents persistence.errors')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetWorkflowExecutionHistory.shard.NONE.count, 0), 1), 'getworkflowexecutionhistory persistence.requests')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.errors.operation.GetWorkflowExecutionHistory.shard.NONE.count, 0), 1), 'getworkflowexecutionhistory persistence.errors')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.DeleteWorkflowExecutionHistory.shard.NONE.count, 0), 1), 'getworkflowexecutionhistory persistence.requests')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "History CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 15,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.AppendHistoryEvents.shard.NONE.median, 0), '1minute', 'avg', false), 'appendhistoryevent median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.AppendHistoryEvents.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'appendhistoryevent p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetWorkflowExecutionHistory.shard.NONE.median, 0), '1minute', 'avg', false), 'getworkflowexecutionhistory median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetWorkflowExecutionHistory.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'getworkflowexecutionhistory p99')"
+            },
+            {
+              "refId": "E",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.DeleteWorkflowExecutionHistory.shard.NONE.median, 0), '1minute', 'avg', false), 'deleteWorkflowExecutionHistory median')"
+            },
+            {
+              "refId": "F",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.DeleteWorkflowExecutionHistory.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'deleteWorkflowExecutionHistory p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "History CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "panels": [
+        {
+          "content": "",
+          "height": "0",
+          "id": 16,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "title": "METADATA MANAGER",
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 17,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.CreateDomain.shard.NONE.count, 0), 1), 'createdomain persistence.requests')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.$services.persistence.requests.operation.GetDomain.shard.NONE.count, 0), 1), 'getdomain persistence.requests')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Domain CRUD",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 18,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateDomain.shard.NONE.median, 0), '1minute', 'avg', false), 'createdomain median')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.CreateDomain.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'createdomain p99')"
+            },
+            {
+              "refId": "C",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetDomain.shard.NONE.median, 0), '1minute', 'avg', false), 'getdomain median')"
+            },
+            {
+              "refId": "D",
+              "target": "alias(summarize(transformNull(stats.timers.$services.persistence.latency.operation.GetDomain.shard.NONE.upper_99, 0), '1minute', 'avg', false), 'getdomain p99')"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Domain CRUD Latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "panels": [],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    }
+  ],
+  "schemaVersion": 14,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allFormat": "glob",
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "All",
+          "value": "{cadence-frontend,cadence-history,cadence-matching}"
+        },
+        "datasource": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": "",
+        "multi": false,
+        "multiFormat": "glob",
+        "name": "services",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "{cadence-frontend,cadence-history,cadence-matching}"
+          },
+          {
+            "selected": false,
+            "text": "cadence-frontend",
+            "value": "cadence-frontend"
+          },
+          {
+            "selected": false,
+            "text": "cadence-history",
+            "value": "cadence-history"
+          },
+          {
+            "selected": false,
+            "text": "cadence-matching",
+            "value": "cadence-matching"
+          }
+        ],
+        "query": "cadence-frontend,cadence-history,cadence-matching",
+        "refresh": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "Cadence-Persistence",
+  "version": 6
+}

@@ -47,6 +47,23 @@ def generate_cmd_map(application):
             'sudo pkill cadence',
             'rm -rf /home/ec2-user/go',
         ]
+    elif application == 'worker':
+        install_service_cmd = [
+            #install golang/glide and checkout code
+            '\'bash -s\' < ./templates/install_bench_test.sh',
+            # upload the config template to config folder
+            '\'cat > bench_template.yaml \' < ./templates/bench_template_worker.yaml ',
+            # generate a config based on template
+            '\'export cadence_frontend_json={cadence_frontend_json} && export statsd_ip_port=\\"{statsd_seeds}\\" && envsubst < bench_template.yaml > /home/ec2-user/go/src/github.com/uber/cadence/config/bench/aws.yaml \'',
+            # start stress test service(HTTP on 9696)
+            '\' cd /home/ec2-user/go/src/github.com/uber/cadence && nohup ./cadence-bench-test aws &>stress.log & \'& ',
+            # check log to see if having any problem
+            '\' sleep 1 &&  /bin/cat /home/ec2-user/go/src/github.com/uber/cadence/stress.log \''
+        ]
+        uninstall_service_cmd = [
+            'sudo pkill cadence',
+            'rm -rf /home/ec2-user/go',
+        ]
 
     cmd_map = {
         'cc': {
