@@ -248,7 +248,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(transformNull(stats.timers.cadence-history.cadence.latency.operation.*.upper_99, 0), 6)"
+              "target": "aliasByNode(stats.timers.cadence-history.cadence.latency.operation.*.upper_99, 6)"
             }
           ],
           "thresholds": [],
@@ -342,8 +342,9 @@
           "steppedLine": false,
           "targets": [
             {
-              "refId": "C",
-              "target": "alias(sumSeries(scaleToSeconds(transformNull(stats.counters.cadence-history.task.requests.operation.*.shard.ALL.count, 0), 1)), 'requests')"
+              "hide": false,
+              "refId": "B",
+              "target": "alias(scaleToSeconds(transformNull(sumSeries(stats.counters.cadence-history.task.requests.operation.*.shard.ALL.count), 0), 1), 'requests')"
             },
             {
               "refId": "A",
@@ -425,7 +426,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Tasks per Operation",
+          "title": "Task per Operation",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -563,7 +564,11 @@
           "targets": [
             {
               "refId": "A",
-              "target": "alias(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update.operation.TransferQueueProcessor.shard.ALL.count, 0), 1), 'ack-level-update')"
+              "target": "aliasByNode(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update.operation.TransferQueueProcessor.shard.ALL.count, 0), 1), 3)"
+            },
+            {
+              "refId": "B",
+              "target": "aliasByNode(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update-failed.operation.TransferQueueProcessor.shard.ALL.count, 0), 1), 3)"
             }
           ],
           "thresholds": [],
@@ -635,7 +640,13 @@
           "targets": [
             {
               "refId": "A",
-              "target": "alias(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update.operation.TimerQueueProcessor.shard.ALL.count, 0), 1), 'ack-level-update')"
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update.operation.TimerQueueProcessor.shard.ALL.count, 0), 1), 'ack-level-update')",
+              "textEditor": false
+            },
+            {
+              "refId": "C",
+              "target": "alias(scaleToSeconds(transformNull(stats.counters.cadence-history.ack-level-update-failed.operation.TimerQueueProcessor.shard.ALL.count, 0), 1), 'ack-level-update')",
+              "textEditor": true
             }
           ],
           "thresholds": [],
@@ -943,7 +954,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 4,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -1019,7 +1030,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 4,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -1091,19 +1102,103 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 4,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "refId": "A",
-              "target": "aliasByNode(scaleToSeconds(stats.counters.cadence-history.persistence.errors.operation.*.shard.ALL.count, 1), 6)"
+              "refId": "C",
+              "target": "aliasByNode(sumSeries(transformNull(scaleToSeconds(stats.counters.cadence-history.persistence.errors.condition-failed.operation.*.shard.*.count, 1), 0)), 5)"
+            },
+            {
+              "refId": "D",
+              "target": "aliasByNode(transformNull(scaleToSeconds(stats.counters.cadence-history.persistence.errors.shard-exists.operation.*.shard.*.count, 1), 0), 5)"
+            },
+            {
+              "refId": "E",
+              "target": "aliasByNode(sumSeries(transformNull(scaleToSeconds(stats.counters.cadence-history.persistence.errors.timeout.operation.*.shard.*.count, 1), 0)), 5)"
+            },
+            {
+              "refId": "F",
+              "target": "aliasByNode(sumSeries(transformNull(scaleToSeconds(stats.counters.cadence-history.persistence.errors.operation.*.shard.*.count, 1), 0)), 5)"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Errors Breakdown",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_LOCAL_GRAPHITE}",
+          "fill": 1,
+          "id": 26,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(scaleToSeconds(transformNull(stats.counters.cadence-history.persistence.errors.operation.*.shard.*.count, 0), 1), 6)"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Errors Per Operation",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1191,7 +1286,7 @@
           },
           "yaxes": [
             {
-              "format": "short",
+              "format": "ms",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1536,6 +1631,10 @@
           "steppedLine": false,
           "targets": [
             {
+              "refId": "A",
+              "target": "aliasByMetric(transformNull(stats.timers.cadence-history.task.latency.operation.TimerTaskWorkflowTimeout.shard.ALL.upper_99, 0))"
+            },
+            {
               "refId": "B",
               "target": "aliasByMetric(transformNull(stats.timers.cadence-history.task.latency.operation.TimerTaskWorkflowTimeout.shard.ALL.median, 0))"
             },
@@ -1546,10 +1645,6 @@
             {
               "refId": "D",
               "target": "aliasByMetric(transformNull(stats.timers.cadence-history.task.latency.operation.TimerTaskWorkflowTimeout.shard.ALL.upper, 0))"
-            },
-            {
-              "refId": "A",
-              "target": "aliasByMetric(transformNull(stats.timers.cadence-history.task.latency.operation.TimerTaskWorkflowTimeout.shard.ALL.upper_99, 0))"
             }
           ],
           "thresholds": [],
@@ -1804,5 +1899,5 @@
   },
   "timezone": "",
   "title": "Cadence-History",
-  "version": 11
+  "version": 14
 }

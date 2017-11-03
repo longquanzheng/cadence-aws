@@ -1086,7 +1086,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(transformNull(stats.timers.cadence-matching.persistence.latency.operation.*.shard.*.mean_99, 0), 6)"
+              "target": "aliasByNode(transformNull(stats.timers.cadence-matching.persistence.latency.operation.*.shard.*.upper_99, 0), 6)"
             }
           ],
           "thresholds": [],
@@ -1162,5 +1162,5 @@
   },
   "timezone": "",
   "title": "Cadence-Matching",
-  "version": 6
+  "version": 7
 }

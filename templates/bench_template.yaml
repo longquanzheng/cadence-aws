@@ -23,7 +23,7 @@ load:
   numTaskLists: 2
 
 zap:
-  level: debug
+  level: info
   outputPaths: ["stdout"]
   errorOutputPaths: ["stdout"]
 
