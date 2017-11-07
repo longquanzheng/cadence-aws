@@ -20,32 +20,31 @@ sleep 150
 
 echo "-----Start configuring cadence clusters-----"
 echo "1. config/install Statsd-Graphite-Grafana application:"
-python operate-instances.py -a statsd -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a statsd -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
-python operate-instances.py -a statsd -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:8080,remote_port:80 --target-instances 0-100
-python operate-instances.py -a statsd -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:8081,remote_port:81 --target-instances 0-100
+python operate-instances.py -a statsd --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
+python operate-instances.py -a statsd --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
+python operate-instances.py -a statsd --pem $5 -d $4 -op fw --operation-params local_port:8080,remote_port:80 --target-instances 0-100
+python operate-instances.py -a statsd --pem $5 -d $4 -op fw --operation-params local_port:8081,remote_port:81 --target-instances 0-100
 
 echo "2. config/install Cassandra application"
-python operate-instances.py -a cassandra -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a cassandra -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
-python operate-instances.py -a cassandra -d cadence-shared --pem $5 -d $4 -op jt --operation-params NONE --target-instances 0-100
+python operate-instances.py -a cassandra --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
+python operate-instances.py -a cassandra --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
+python operate-instances.py -a cassandra --pem $5 -d $4 -op jt --operation-params NONE --target-instances 0-100
 
 echo "3. config/install Cadence frontend application"
-python operate-instances.py -a frontend -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a frontend -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
+python operate-instances.py -a frontend --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
+python operate-instances.py -a frontend --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "4. config/install Cadence history application"
-python operate-instances.py -a history -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a history -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
+python operate-instances.py -a history --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
+python operate-instances.py -a history --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "5. config/install Cadence matching application"
-python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
-python operate-instances.py -a matching -d cadence-shared --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
+python operate-instances.py -a matching --pem $5 -d $4 -op dk --operation-params NONE --target-instances 0-100
+python operate-instances.py -a matching --pem $5 -d $4 -op sv --operation-params num_history_shards:4,log_level:info,version:master --target-instances 0-100
 
 echo "6. config/install Cadence stress(bench) test application"
-python operate-instances.py -a stress -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
-python operate-instances.py -a stress -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:9696,remote_port:9696 --target-instances 0-100
+python operate-instances.py -a stress --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
+python operate-instances.py -a stress --pem $5 -d $4 -op fw --operation-params local_port:9696,remote_port:9696 --target-instances 0-100
 
 echo "7. config/install Cadence bench worker application"
-python operate-instances.py -a worker -d cadence-shared --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100
-python operate-instances.py -a worker -d cadence-shared --pem $5 -d $4 -op fw --operation-params local_port:9696,remote_port:9696 --target-instances 0-100
+python operate-instances.py -a worker --pem $5 -d $4 -op sv --operation-params NONE --target-instances 0-100

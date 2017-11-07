@@ -17,7 +17,7 @@ def generate_cmd_map(application):
                 },
             'num_history_shards': {
                 'default': '4',
-                'choices': ['4', '16384']
+                'choices': ['4', '1024', '16384']
             },
             'version':{
                 #master tag is for latest commit on master branch
