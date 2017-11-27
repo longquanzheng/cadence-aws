@@ -6,9 +6,9 @@ def generate_cmd_map(application):
     params={}
     if application == 'cassandra':
         #TODO --network=host is not working with Cassandra due to https://github.com/odota/core/issues/1121
-        install_service_cmd = [ '\'docker run  -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e LOCAL_JMX=no -e     JVM_EXTRA_OPTS=-Djava.rmi.server.hostname=127.0.0.1 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\'' ]
+        install_service_cmd = [ '\'docker run --ulimit nofile=65535:100000 -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e LOCAL_JMX=no -e     JVM_EXTRA_OPTS=-Djava.rmi.server.hostname=127.0.0.1 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\'' ]
     elif application == 'statsd':
-        install_service_cmd = ['\'docker run  -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\'']
+        install_service_cmd = ['\'docker run --ulimit nofile=65535:100000 -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\'']
     elif application in ['frontend', 'matching', 'history']:
         params={
             'log_level': {
@@ -28,7 +28,7 @@ def generate_cmd_map(application):
         install_service_cmd = [
             # remove docker image of tag master to pick up latest commit on master branch
             '\'docker rmi -f ubercadence/server:master\'',
-            '\'docker run  -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
+            '\'docker run --ulimit nofile=65535:100000 -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
             ]
     elif application == 'stress':
         install_service_cmd = [
@@ -78,14 +78,19 @@ def generate_cmd_map(application):
         'dk': {
             'cmds': ['\'bash -s\' < ./templates/install_docker.sh'],
             'desc': 'Install docker'
-           },
+        },
+
+        'fd': {
+            'cmds': ['\'bash -s\' < ./templates/update_fd_limit.sh'],
+            'desc': 'Update fd_limit'
+        },
 
         # install service
         'sv':{
             'params': params,
             'cmds': install_service_cmd,
             'desc': 'Install service '+application
-          },
+        },
 
         # install jmxtrans
         # TODO need to figure it out how to use docker to make it easier
@@ -114,12 +119,12 @@ def generate_cmd_map(application):
         'us':{
             'cmds': uninstall_service_cmd,
              'desc': 'Uninstall service '+application
-          },
+        },
 
         'lg':{
             'cmds': [''],
             'desc': 'Login EC2 host'
-          },
+        },
 
         'fw':{
             'params':{
