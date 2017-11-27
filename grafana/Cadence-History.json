@@ -248,7 +248,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(stats.timers.cadence-history.cadence.latency.operation.*.upper_99, 6)"
+              "target": "aliasByNode(scaleToSeconds(transformNull(stats.timers.cadence-history.cadence.latency.operation.*.upper_99, 0), 1), 6)"
             }
           ],
           "thresholds": [],
@@ -1264,7 +1264,7 @@
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(transformNull(stats.timers.cadence-history.persistence.latency.operation.*.shard.ALL.count, 0), 6)"
+              "target": "aliasByNode(transformNull(stats.timers.cadence-history.persistence.latency.operation.*.shard.ALL.upper_99, 0), 6)"
             }
           ],
           "thresholds": [],
@@ -1473,7 +1473,7 @@
           },
           "yaxes": [
             {
-              "format": "s",
+              "format": "ms",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1899,5 +1899,5 @@
   },
   "timezone": "",
   "title": "Cadence-History",
-  "version": 14
+  "version": 2
 }

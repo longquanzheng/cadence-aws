@@ -8,7 +8,7 @@ service:
   httpListenPort: 9696
 
 worker:
-  numTaskLists: 2
+  numTaskLists: 1
 
 basic:
   totalLaunchCount: 1000
@@ -20,7 +20,7 @@ basic:
 load:
   testName: "chronos_marketplace_10"
   workflowRPS: 100
-  numTaskLists: 2
+  numTaskLists: 1
 
 zap:
   level: info
