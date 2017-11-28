@@ -915,7 +915,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Activity Poll Latency",
+          "title": "Activity Execution Latency",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1119,7 +1119,7 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
