@@ -6,9 +6,9 @@ def generate_cmd_map(application):
     params={}
     if application == 'cassandra':
         #TODO --network=host is not working with Cassandra due to https://github.com/odota/core/issues/1121
-        install_service_cmd = [ '\'docker run --ulimit nofile=65535:100000 -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e LOCAL_JMX=no -e     JVM_EXTRA_OPTS=-Djava.rmi.server.hostname=127.0.0.1 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\'' ]
+        install_service_cmd = [ '\'docker run --restart=unless-stopped --ulimit nofile=65535:100000 -d --name cadence-cassandra  -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -e LOCAL_JMX=no -e     JVM_EXTRA_OPTS=-Djava.rmi.server.hostname=127.0.0.1 -e CASSANDRA_BROADCAST_ADDRESS={private_ip} -e CASSANDRA_SEEDS={cassandra_seeds} --log-opt max-size=5g cassandra:3.11\'' ]
     elif application == 'statsd':
-        install_service_cmd = ['\'docker run --ulimit nofile=65535:100000 -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\'']
+        install_service_cmd = ['\'docker run --restart=unless-stopped --ulimit nofile=65535:100000 -d --network=host --name cadence-statsd  -p 80-81:80-81 -p 8025-8026:8025-8026 -p 2003:2003 -p 9160:9160 --log-opt max-size=5g kamon/grafana_graphite\'']
     elif application in ['frontend', 'matching', 'history']:
         params={
             'log_level': {
@@ -28,7 +28,7 @@ def generate_cmd_map(application):
         install_service_cmd = [
             # remove docker image of tag master to pick up latest commit on master branch
             '\'docker rmi -f ubercadence/server:master\'',
-            '\'docker run --ulimit nofile=65535:100000 -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
+            '\'docker run --restart=unless-stopped --ulimit nofile=65535:100000 -d --network=host --name cadence-{application}  -e CASSANDRA_SEEDS={cassandra_seeds} -e RINGPOP_SEEDS={cadence_seeds}  -e STATSD_ENDPOINT={statsd_seeds} -e SERVICES={application}  -p 7933-7935:7933-7935  -e LOG_LEVEL={log_level} -e NUM_HISTORY_SHARDS={num_history_shards} --log-opt max-size=5g ubercadence/server:{version}\''
             ]
     elif application == 'stress':
         install_service_cmd = [
@@ -38,14 +38,20 @@ def generate_cmd_map(application):
             '\'cat > bench_template.yaml \' < ./templates/bench_template.yaml ',
             # generate a config based on template
             '\'export cadence_frontend_json={cadence_frontend_json} && export statsd_ip_port=\\"{statsd_seeds}\\" && envsubst < bench_template.yaml > /home/ec2-user/go/src/github.com/uber/cadence/config/bench/aws.yaml \'',
+            # create cadence-bench service
+            '\'sudo touch /etc/init.d/cadence-bench && sudo chmod 777 /etc/init.d/cadence-bench && cat >> /etc/init.d/cadence-bench \' < ./templates/bench_service.sh ',
             # start stress test service(HTTP on 9696)
-            '\' cd /home/ec2-user/go/src/github.com/uber/cadence && nohup ./cadence-bench-test aws &>stress.log & \'& ',
+            '\'sudo service cadence-bench start \'& ',
+            # add to chkconfig
+            '\'sudo chkconfig --add cadence-bench \'',
             # check log to see if having any problem
             '\' sleep 1 &&  /bin/cat /home/ec2-user/go/src/github.com/uber/cadence/stress.log \''
         ]
         uninstall_service_cmd = [
+            'sudo service cadence-bench stop',
             'sudo pkill cadence',
             'rm -rf /home/ec2-user/go',
+            'sudo rm -rf /etc/init.d/cadence-bench',
         ]
     elif application == 'worker':
         install_service_cmd = [
@@ -55,14 +61,20 @@ def generate_cmd_map(application):
             '\'cat > bench_template.yaml \' < ./templates/bench_template_worker.yaml ',
             # generate a config based on template
             '\'export cadence_frontend_json={cadence_frontend_json} && export statsd_ip_port=\\"{statsd_seeds}\\" && envsubst < bench_template.yaml > /home/ec2-user/go/src/github.com/uber/cadence/config/bench/aws.yaml \'',
+            # create cadence-bench service
+            '\'sudo touch /etc/init.d/cadence-bench && sudo chmod 777 /etc/init.d/cadence-bench && cat >> /etc/init.d/cadence-bench \' < ./templates/bench_service.sh ',
             # start stress test service(HTTP on 9696)
-            '\' cd /home/ec2-user/go/src/github.com/uber/cadence && nohup ./cadence-bench-test aws &>stress.log & \'& ',
+            '\'sudo service cadence-bench start \'& ',
+            # add to chkconfig
+            '\'sudo chkconfig --add cadence-bench \'',
             # check log to see if having any problem
             '\' sleep 1 &&  /bin/cat /home/ec2-user/go/src/github.com/uber/cadence/stress.log \''
         ]
         uninstall_service_cmd = [
+            'sudo service cadence-bench stop',
             'sudo pkill cadence',
             'rm -rf /home/ec2-user/go',
+            'sudo rm -rf /etc/init.d/cadence-bench',
         ]
 
     cmd_map = {
