@@ -3,6 +3,7 @@ Create/manage Cadence service on AWS
 See https://github.com/uber/cadence
 ![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/architecture.png)
 
+Slides: https://docs.google.com/presentation/d/1huXUi040YM5WjbjB25Q3l9k7uEBZsTcd1kYS5gRHwZU/
 
 Two major scripts:
 ## create-instances.py
