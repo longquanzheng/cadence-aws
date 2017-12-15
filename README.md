@@ -1,6 +1,8 @@
-# What? cadence-aws
+# What is cadence-aws?
 Create/manage Cadence service on AWS
 See https://github.com/uber/cadence
+![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/architeture.png)
+
 
 Two major scripts:
 ## create-instances.py
