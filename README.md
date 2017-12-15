@@ -1,7 +1,7 @@
 # What is cadence-aws?
 Create/manage Cadence service on AWS
 See https://github.com/uber/cadence
-![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/architeture.png)
+![ScreenShot](https://github.com/longquanzheng/cadence-aws/blob/master/templates/architecture.png)
 
 
 Two major scripts:
