@@ -60,9 +60,9 @@ def get_seeds():
     filters[0]['Values'] = [ args.deployment_group+'-cassandra' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
-    cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
     if len(ips)==0:
         raise Exception("at least one Cassandra host need to be created first!")
+    cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
 
     filters[0]['Values'] = [ args.deployment_group+'-statsd' ]
     response = ec2.describe_instances(Filters=filters)

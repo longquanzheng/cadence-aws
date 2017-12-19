@@ -149,7 +149,7 @@ def generate_cmd_map(application):
                 },
             },
             'cmds': ['-f -N -L {local_port}:{private_ip}:{remote_port}'],
-            'desc': 'Forword a remote port(port on a remote host) to a local port(port on your laptop).'
+            'desc': 'Local port forwording, i.e. forwording the local port to remopte server port.'
         },
 
         'tm':{
