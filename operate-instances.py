@@ -133,9 +133,13 @@ def parse_ec2_response(response):
     for res in response['Reservations']:
 
         for ins in res['Instances']:
+            state = ins['State']['Name']
+            if state == 'terminated':
+                continue
+
             instances[ins_cnt] = {
                 'InstanceId': ins['InstanceId'] ,
-                'State': ins['State']['Name'],
+                'State': state,
             }
 
             public_ip, private_ip = 'None','None'

@@ -19,6 +19,9 @@ ec2 = boto3.client('ec2', region_name=args.region)
 #response = ec2.describe_instances()
 print 'Going to request an on-demand EC2 instance...'
 
+if args.disk_size >= 2048 or args.disk_size < 10:
+    raise Exception('Disk size should be in [10, 2048), not all operating systems support root volumes that are greater than 2047 GiB.')
+
 response = ec2.run_instances(
     BlockDeviceMappings=[
         {
