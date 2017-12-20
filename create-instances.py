@@ -2,6 +2,7 @@ import boto3,argparse,json,getpass
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--region", "-r", choices=['us-east-1', 'us-west-1', 'us-east-2', 'us-west-2', 'ap-southeast-1','ap-southeast-2','ap-northeast-1','ap-northeast-2', 'ap-south-1', 'eu-west-1','eu-west-2', 'ca-central-1'], required=False, help='aws region', default='us-east-1')
 parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'worker', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--num", type=int, default=1, help='number of instances that will be created')
 parser.add_argument("--instance-type", default='t2.medium')
@@ -14,9 +15,12 @@ parser.add_argument("--deployment-group", "-d", default='cadence-dev-{username}'
 
 args = parser.parse_args()
 
-ec2 = boto3.client('ec2')
+ec2 = boto3.client('ec2', region_name=args.region)
 #response = ec2.describe_instances()
 print 'Going to request an on-demand EC2 instance...'
+
+if args.disk_size >= 2048 or args.disk_size < 10:
+    raise Exception('Disk size should be in [10, 2048), not all operating systems support root volumes that are greater than 2047 GiB.')
 
 response = ec2.run_instances(
     BlockDeviceMappings=[

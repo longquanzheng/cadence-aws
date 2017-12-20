@@ -5,6 +5,7 @@ pp = pprint.PrettyPrinter()
 #pp.pprint(response)
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--region", "-r", choices=['us-east-1', 'us-west-1', 'us-east-2', 'us-west-2', 'ap-southeast-1','ap-southeast-2','ap-northeast-1','ap-northeast-2', 'ap-south-1', 'eu-west-1','eu-west-2', 'ca-central-1'], required=False, help='aws region', default='us-east-1')
 parser.add_argument("--application", "-a", choices=['cassandra', 'matching', 'history', 'frontend', 'stress', 'worker', 'statsd'], required=True, help='application type that will be created')
 parser.add_argument("--dry-run", action='store_true', help='Only print out commands')
 parser.add_argument("--pem", default='~/ec2.pem'.format(username=getpass.getuser()), required=False, help='Private key to login EC2 instances')
@@ -15,7 +16,7 @@ parser.add_argument("--target-instances", required=False, help='target instances
 args = parser.parse_args()
 
 
-ec2 = boto3.client('ec2')
+ec2 = boto3.client('ec2', region_name=args.region)
 filters = [ { 'Name': 'tag:Name', 'Values': [] },]
 
 def run_cmd(instances, instance_idxs, cmd_tmpls, params):
@@ -59,9 +60,9 @@ def get_seeds():
     filters[0]['Values'] = [ args.deployment_group+'-cassandra' ]
     response = ec2.describe_instances(Filters=filters)
     ips = parse_ips_from_ec2_response(response)
-    cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
     if len(ips)==0:
         raise Exception("at least one Cassandra host need to be created first!")
+    cassandra_seeds = reduce(lambda ip1,ip2: ip1+","+ip2, ips)
 
     filters[0]['Values'] = [ args.deployment_group+'-statsd' ]
     response = ec2.describe_instances(Filters=filters)
@@ -132,9 +133,13 @@ def parse_ec2_response(response):
     for res in response['Reservations']:
 
         for ins in res['Instances']:
+            state = ins['State']['Name']
+            if state == 'terminated':
+                continue
+
             instances[ins_cnt] = {
                 'InstanceId': ins['InstanceId'] ,
-                'State': ins['State']['Name'],
+                'State': state,
             }
 
             public_ip, private_ip = 'None','None'
